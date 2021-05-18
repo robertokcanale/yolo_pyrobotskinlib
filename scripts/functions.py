@@ -49,7 +49,6 @@ def reshape_coordinates_bb (coord_in, width_i, height_i, width_o, height_o):
 
 def bounding_box_predictions(det, bb_number, names):
     bb_predictions = [BoundingBox() for i in range(bb_number)]
-        #bb = "BOUNDING BOXES:" + str(round(time.time(), 5)) + " " #string to write on
     for i in range(bb_number): #scan the prediction matrix DET/PRED (they are the same)
         coordinates=[round(det[i][0].item(),3),round(det[i][1].item(),3),round(det[i][2].item(),3),round(det[i][3].item(),3)] 
         confidence = round(det[i][4].item(),5)
@@ -65,7 +64,6 @@ def bounding_box_predictions_reshaped(bb_predictions, bb_number, I_backtorgb, co
     for i in range(bb_number): 
         xyxy = reshape_coordinates_bb(bb_predictions[i].coordinates, 416, 416, rows, cols) #for a different image size
         bb_predictions_reshaped[i].set_bb(bb_predictions[i].id, bb_predictions[i].label, bb_predictions[i].confidence, xyxy)
-        print("Coordintes Reshaped ", xyxy)
 
     for i in range(bb_number):  #reshaped detections on image
             label = str(bb_predictions_reshaped[i].label) + " " + str(round(bb_predictions_reshaped[i].confidence, 2))

@@ -1,6 +1,7 @@
 import pyrobotskinlib as rsl 
 import numpy as np
 import argparse
+import time
 import torch
 import cv2
 import time
@@ -27,8 +28,9 @@ if __name__ == '__main__':
     rows = TIB.get_rows()
     cols = TIB.get_cols()
     skin_faces = S.get_faces()
+    number_of_faces = len(skin_faces)
     taxel_ids = S.get_taxel_ids()
-    #print("Skin_faces= ", skin_faces, "Taxel_ids= ",taxel_ids)
+    #print("Skin_faces= ", skin_faces, "Face_numbers= ", number_of_faces, "Taxel_ids= ",taxel_ids)
     #INITIALIZE YOLOV5
     parser = argparse.ArgumentParser()
     parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --class 0, or --class 0 2 3')
@@ -39,7 +41,7 @@ if __name__ == '__main__':
     imgsz = 416
     conf_thres = 0.5
     iou_thres = 0.5
-    device = '0' #or CPU if needed
+    device = 'CPU' #'0' or CPU if needed
     colors = [[0,0,255], [0,255,0], [255,0,0], [100,100,100], [0,50,150], [75,150,0] ] #6 classes
     #GPU
     set_logging()
@@ -91,16 +93,29 @@ if __name__ == '__main__':
         
         #RESHAPE BOUNDING BOXES
         bb_predictions_reshaped, I_backtorgb = bounding_box_predictions_reshaped(bb_predictions, bb_number, I_backtorgb, colors, rows, cols)
-        activated_faces = np.zeros((bb_number,3), dtype= np.int32)
+        
+        taxel_predictions = np.empty((bb_number,), dtype = object)
         for n in range(bb_number):
+            faces_predictions = [] #empty array for the faces of a single bounding box
+            face_index_previous = 0
             for i in range(bb_predictions_reshaped[n].coordinates_reshaped[0], bb_predictions_reshaped[n].coordinates_reshaped[2]):
                 for j in range(bb_predictions_reshaped[n].coordinates_reshaped[1], bb_predictions_reshaped[n].coordinates_reshaped[3]):
-                    #map_position = TIB.get_pixel_position_on_map( i,  j)
-                    face_index = TIB.get_pixel_face_index( i,  j)            
-                    activated_faces[n][i] = skin_faces[face_index]
-                    
-                    
-        
+                    face_index = TIB.get_pixel_face_index( i,  j)
+                    if face_index == (-1) or face_index >= 1218:
+                        print("Wrong Face")
+                        break
+                    if face_index == face_index_previous:
+                        break
+                    print(skin_faces[face_index])
+                    faces_predictions.append(skin_faces[face_index][0])
+                    faces_predictions.append(skin_faces[face_index][1])
+                    faces_predictions.append(skin_faces[face_index][2])
+
+                    face_index_previous = face_index
+            taxel_predictions[n] = faces_predictions
+
+        print("Taxel Predictions:", taxel_predictions) #here I have all the taxel indexes of my predictions, however i need to clean them 
+
         #I_resized = cv2.resize(I_resized, (rows,cols), interpolation=cv2.INTER_AREA) #resize it for yolo, ale dice di non fare il resize
         im_to_show = cv2.resize(I_resized, (500, 500), interpolation = cv2.INTER_AREA)
         cv2.imshow('Tactile Image',im_to_show)
@@ -108,6 +123,6 @@ if __name__ == '__main__':
 
         cv2.imshow('Tactile Image  Original',I_backtorgb)
         cv2.waitKey(1)
-
+        time.sleep(0.5)
 
         #print(  str(u.get_timestamp_in_sec()) + " | " + str(S.taxels[0].get_taxel_response()) )
