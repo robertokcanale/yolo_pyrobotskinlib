@@ -41,7 +41,7 @@ if __name__ == '__main__':
     imgsz = 416
     conf_thres = 0.5
     iou_thres = 0.5
-    device = 'CPU' #'0' or CPU if needed
+    device = '0' #'0' or CPU if needed
     colors = [[0,0,255], [0,255,0], [255,0,0], [100,100,100], [0,50,150], [75,150,0] ] #6 classes
     #GPU
     set_logging()
@@ -95,30 +95,16 @@ if __name__ == '__main__':
         bb_predictions_reshaped, I_backtorgb = bounding_box_predictions_reshaped(bb_predictions, bb_number, I_backtorgb, colors, rows, cols)
         
         #ACTIVATED TAXELS FOR EACH BB
-        taxel_predictions = np.empty((bb_number,), dtype = object)
-        taxel_predictions_info = np.empty((bb_number,), dtype = object)
-        for n in range(bb_number):
-            faces_predictions = [] #empty array for the faces of a single bounding box
-            face_index_previous = 0
-            for i in range(bb_predictions_reshaped[n].coordinates_reshaped[0], bb_predictions_reshaped[n].coordinates_reshaped[2]):
-                for j in range(bb_predictions_reshaped[n].coordinates_reshaped[1], bb_predictions_reshaped[n].coordinates_reshaped[3]):
-                    face_index = TIB.get_pixel_face_index( i,  j)
-                    if face_index == (-1) or face_index >= 1218:
-                        print("Wrong Face")
-                        break
-                    if face_index == face_index_previous:
-                        break
-                    faces_predictions.append(skin_faces[face_index][0])
-                    faces_predictions.append(skin_faces[face_index][1])
-                    faces_predictions.append(skin_faces[face_index][2])
+        taxel_predictions, taxel_predictions_info = bb_active_taxel(bb_number, bb_predictions_reshaped, TIB, skin_faces)
+        
+        #GET RESPONSE OF ACTIVATED TAXELS
+        total_taxel_responses = taxel_responses(bb_number, S,taxel_predictions)
 
-                    face_index_previous = face_index
-            taxel_predictions[n] = set(faces_predictions) #set rmoves duplicates
-            taxel_predictions_info[n] = bb_predictions_reshaped[n].label + ",", str(len(set(faces_predictions)))
+
         print("Taxel Predictions:", taxel_predictions) #here I have all the taxel indexes of my predictions, however i need to clean them 
         print("Taxel Predictions Info:", taxel_predictions_info) #here I have all the taxel indexes of my predictions, however i need to clean them 
+        print("Taxel Responses:", total_taxel_responses)
 
-        #I_resized = cv2.resize(I_resized, (rows,cols), interpolation=cv2.INTER_AREA) #resize it for yolo, ale dice di non fare il resize
         im_to_show = cv2.resize(I_resized, (500, 500), interpolation = cv2.INTER_AREA)
         cv2.imshow('Tactile Image',im_to_show)
         cv2.waitKey(1)
