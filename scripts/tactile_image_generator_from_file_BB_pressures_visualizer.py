@@ -18,19 +18,26 @@ from utils.torch_utils import select_device, load_classifier, time_synchronized
 #MAIN
 if __name__ == '__main__':
     
-    #LOAD TACTILE IMAGE
+    #LOAD TACTILE SKIN&TACTILE MAP
     S = rsl.RobotSkin("../calibration_files/collaborate_handle_1_ale.json")
     u = rsl.SkinUpdaterFromFile(S, "../data/hands_test_3.txt")
     T = rsl.TactileMap(S,0)
+    #BUILD MESH VISUALIZER
+    V = rsl.RobotSkinViewer(500,500,20000)
+    V2 = rsl.RobotSkinViewer(500,500,20000)
+    #RENDER MESH
+    V.render_object(S,"Robot")
+    V2.render_object(S,"Robot_Markers")
+    #BUILD IMAGE
     TIB = rsl.TactileImageBuilder(T)
     TIB.build_tactile_image()
     u.start_robot_skin_updater()
     rows = TIB.get_rows()
     cols = TIB.get_cols()
+    #GET SKIN INFO
     skin_faces = S.get_faces()
     number_of_faces = len(skin_faces)
     taxel_ids = S.get_taxel_ids()
-    #print("Skin_faces= ", skin_faces, "Face_numbers= ", number_of_faces, "Taxel_ids= ",taxel_ids)
     #INITIALIZE YOLOV5
     parser = argparse.ArgumentParser()
     parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --class 0, or --class 0 2 3')
@@ -53,8 +60,9 @@ if __name__ == '__main__':
 
 
     while True:
-        #CREATE TACTILE IMAGE AND PROCESS IMAGE (for recorded data)
+        #GET NEW DATA
         u.make_this_thread_wait_for_new_data()
+        #CREATE TACTILE IMAGE AND PROCESS IMAGE (for recorded data)
         I = np.array(TIB.get_tactile_image(),np.uint8) #get the image 
         I = I.reshape([rows,cols]) #reshape it into a 2d array
         I_backtorgb = cv2.cvtColor(I,cv2.COLOR_GRAY2RGB)  #converting from grayscale to rgb 
@@ -105,14 +113,19 @@ if __name__ == '__main__':
         print("Taxel Predictions Info:", taxel_predictions_info) #here I have all the taxel indexes of my predictions, however i need to clean them 
         print("Taxel Responses:", total_taxel_responses)
         print("Taxel Positions:", total_taxels_position)
-
-
+        
+        for n in range(bb_number):
+            print("n=", n)
+            for i in range(int((np.size(total_taxels_position[n])) / 3)):
+                print(total_taxels_position[n][i])
+                V.add_marker(total_taxels_position[n][i], GL_POINTS)
+        
         im_to_show = cv2.resize(I_resized, (500, 500), interpolation = cv2.INTER_AREA)
-        cv2.imshow('Tactile Image',im_to_show)
-        cv2.waitKey(1)
+        #cv2.imshow('Tactile Image',im_to_show)
+        #cv2.waitKey(1)
 
         cv2.imshow('Tactile Image  Original',I_backtorgb)
         cv2.waitKey(1)
-        time.sleep(0.5)
+        #time.sleep(0.5)
 
         #print(  str(u.get_timestamp_in_sec()) + " | " + str(S.taxels[0].get_taxel_response()) )

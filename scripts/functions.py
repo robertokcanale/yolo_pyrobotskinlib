@@ -99,10 +99,14 @@ def bb_active_taxel (bb_number, bb_predictions_reshaped, TIB, skin_faces):
 #Get taxel responses for all bounding boxes 
 def taxel_responses(bb_number, S,taxel_predictions):
     total_taxel_responses = np.empty((bb_number,), dtype = object)
+    total_taxels_position = np.empty((bb_number,), dtype = object)
     for n in range(bb_number):
-        taxel_response = [] #empty array for the faces of a single bounding box
+        taxel_response = [] #empty array for the responses of a single bounding box
+        taxels_position = [] #empty array for the idus of a single bounding box
         for i in taxel_predictions[n]:
-            taxel_response.append(S.taxels[i].get_taxel_response()) #set rmoves duplicatess
-        total_taxel_responses[n] = set(taxel_response)
-
-    return total_taxel_responses
+            if S.taxels[i].get_taxel_response() != 0: 
+                taxel_response.append(S.taxels[i].get_taxel_response()) #set rmoves duplicatess
+                taxels_position.append(S.taxels[i].get_taxel_position())              
+        total_taxel_responses[n] = taxel_response
+        total_taxels_position[n] = taxels_position
+    return total_taxel_responses , total_taxels_position
