@@ -20,7 +20,7 @@ if __name__ == '__main__':
     
     #LOAD TACTILE SKIN&TACTILE MAP
     S = rsl.RobotSkin("../calibration_files/collaborate_handle_1_ale.json")
-    u = rsl.SkinUpdaterFromFile(S, "../data/hands_test_3.txt")
+    u = rsl.SkinUpdaterFromFile(S, "../data/hands_test_1.txt")
     T = rsl.TactileMap(S,0)
     #BUILD MESH VISUALIZER
     V = rsl.RobotSkinViewer(500,500,20000)
@@ -50,6 +50,8 @@ if __name__ == '__main__':
     iou_thres = 0.5
     device = '0' #'0' or CPU if needed
     colors = [[0,0,255], [0,255,0], [255,0,0], [100,100,100], [0,50,150], [75,150,0] ] #6 classes
+    color_dict = dict({ 'palm':[0,0,255, 1], 'thumb':[0,255,0,1], 'index':[255,0,0,1], 'middle':[100,100,100, 1], 'ring':[0,50,150,1], 'pinkie':[75,150,0,1]  })
+
     #GPU
     set_logging()
     device = select_device(device)
@@ -106,19 +108,16 @@ if __name__ == '__main__':
         taxel_predictions, taxel_predictions_info = bb_active_taxel(bb_number, bb_predictions_reshaped, TIB, skin_faces)
         
         #GET RESPONSE OF ACTIVATED TAXELS
-        total_taxel_responses , total_taxels_position = taxel_responses(bb_number, S,taxel_predictions)
-
+        total_taxel_responses, average_responses, total_taxels_position = taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info)
 
         print("Taxel Predictions:", taxel_predictions) #here I have all the taxel indexes of my predictions, however i need to clean them 
         print("Taxel Predictions Info:", taxel_predictions_info) #here I have all the taxel indexes of my predictions, however i need to clean them 
-        print("Taxel Responses:", total_taxel_responses)
+        print("Taxel Responses:", total_taxel_responses) # I get the taxels with response different from 0
         print("Taxel Positions:", total_taxels_position)
         
-        for n in range(bb_number):
-            print("n=", n)
-            for i in range(int((np.size(total_taxels_position[n])) / 3)):
-                print(total_taxels_position[n][i])
-                V.add_marker(total_taxels_position[n][i], GL_POINTS)
+        #VISUALIZE MARKERS
+        marker_visualization(bb_number, V, total_taxels_position, taxel_predictions_info, color_dict )
+
         
         im_to_show = cv2.resize(I_resized, (500, 500), interpolation = cv2.INTER_AREA)
         #cv2.imshow('Tactile Image',im_to_show)
@@ -126,6 +125,6 @@ if __name__ == '__main__':
 
         cv2.imshow('Tactile Image  Original',I_backtorgb)
         cv2.waitKey(1)
-        #time.sleep(0.5)
 
-        #print(  str(u.get_timestamp_in_sec()) + " | " + str(S.taxels[0].get_taxel_response()) )
+        time.sleep(1)
+        V.remove_markers()

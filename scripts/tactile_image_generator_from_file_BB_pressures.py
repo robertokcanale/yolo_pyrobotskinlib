@@ -20,7 +20,7 @@ if __name__ == '__main__':
     
     #LOAD TACTILE IMAGE
     S = rsl.RobotSkin("../calibration_files/collaborate_handle_1_ale.json")
-    u = rsl.SkinUpdaterFromFile(S, "../data/hands_test_3.txt")
+    u = rsl.SkinUpdaterFromFile(S, "../data/hands_test_2.txt")
     T = rsl.TactileMap(S,0)
     TIB = rsl.TactileImageBuilder(T)
     TIB.build_tactile_image()
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     imgsz = 416
     conf_thres = 0.5
     iou_thres = 0.5
-    device = '0' #'0' or CPU if needed
+    device = 'CPU' #'0' or CPU if needed
     colors = [[0,0,255], [0,255,0], [255,0,0], [100,100,100], [0,50,150], [75,150,0] ] #6 classes
     #GPU
     set_logging()
@@ -98,13 +98,13 @@ if __name__ == '__main__':
         taxel_predictions, taxel_predictions_info = bb_active_taxel(bb_number, bb_predictions_reshaped, TIB, skin_faces)
         
         #GET RESPONSE OF ACTIVATED TAXELS
-        total_taxel_responses , total_taxels_position = taxel_responses(bb_number, S,taxel_predictions)
+        total_taxel_responses, average_responses, total_taxels_position = taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info)
 
 
-        print("Taxel Predictions:", taxel_predictions) #here I have all the taxel indexes of my predictions, however i need to clean them 
+        #print("Taxel Predictions:", taxel_predictions) #here I have all the taxel indexes of my predictions, however i need to clean them 
         print("Taxel Predictions Info:", taxel_predictions_info) #here I have all the taxel indexes of my predictions, however i need to clean them 
         print("Taxel Responses:", total_taxel_responses)
-        print("Taxel Positions:", total_taxels_position)
+        #print("Taxel Positions:", total_taxels_position)
 
 
         im_to_show = cv2.resize(I_resized, (500, 500), interpolation = cv2.INTER_AREA)

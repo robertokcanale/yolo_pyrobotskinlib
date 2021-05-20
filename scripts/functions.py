@@ -78,6 +78,7 @@ def bb_active_taxel (bb_number, bb_predictions_reshaped, TIB, skin_faces):
     taxel_predictions_info = np.empty((bb_number,), dtype = object)
     for n in range(bb_number):
         faces_predictions = []
+        info = []
         face_index_previous = 0
         for i in range(bb_predictions_reshaped[n].coordinates_reshaped[0], bb_predictions_reshaped[n].coordinates_reshaped[2]):
             for j in range(bb_predictions_reshaped[n].coordinates_reshaped[1], bb_predictions_reshaped[n].coordinates_reshaped[3]):
@@ -85,7 +86,7 @@ def bb_active_taxel (bb_number, bb_predictions_reshaped, TIB, skin_faces):
                 if face_index == (-1) or face_index >= 1218:
                     print("Wrong Face")
                     break
-                if face_index == face_index_previous:
+                if face_index == face_index_previous: # not recounting the same taxel over and over
                     break
                 faces_predictions.append(skin_faces[face_index][0])
                 faces_predictions.append(skin_faces[face_index][1])
@@ -93,20 +94,38 @@ def bb_active_taxel (bb_number, bb_predictions_reshaped, TIB, skin_faces):
 
                 face_index_previous = face_index
         taxel_predictions[n] = set(faces_predictions) #set rmoves duplicates
-        taxel_predictions_info[n] = bb_predictions_reshaped[n].label + ", " + str(bb_predictions_reshaped[n].confidence) + ", " + str(len(set(faces_predictions))) #this is the name, conf and # active taxels per prediction
+        info.append(bb_predictions_reshaped[n].label)
+        info.append(bb_predictions_reshaped[n].confidence)
+        info.append(len(set(faces_predictions)))
+        taxel_predictions_info[n] = info #this is the name, conf and # active taxels per prediction
     return taxel_predictions, taxel_predictions_info
 
 #Get taxel responses for all bounding boxes 
-def taxel_responses(bb_number, S,taxel_predictions):
+def taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info):
     total_taxel_responses = np.empty((bb_number,), dtype = object)
     total_taxels_position = np.empty((bb_number,), dtype = object)
+    average_responses = np.empty((bb_number,), dtype = object)
+
     for n in range(bb_number):
         taxel_response = [] #empty array for the responses of a single bounding box
         taxels_position = [] #empty array for the idus of a single bounding box
         for i in taxel_predictions[n]:
             if S.taxels[i].get_taxel_response() != 0: 
-                taxel_response.append(S.taxels[i].get_taxel_response()) #set rmoves duplicatess
+                taxel_response.append(S.taxels[i].get_taxel_response()) 
                 taxels_position.append(S.taxels[i].get_taxel_position())              
         total_taxel_responses[n] = taxel_response
         total_taxels_position[n] = taxels_position
-    return total_taxel_responses , total_taxels_position
+
+    for n in range(bb_number):
+        average_response = sum(total_taxel_responses[n]) / taxel_predictions_info[n][2]
+        average_responses[n] = average_response
+        print("Average response of", taxel_predictions_info[n][0], "is", average_response)
+
+    return total_taxel_responses, average_responses, total_taxels_position
+
+
+def marker_visualization(bb_number, V, total_taxels_position, taxel_predictions_info, color_dict):
+    for n in range(bb_number):
+        for i in range(int((np.size(total_taxels_position[n])) / 3)):
+            contact_color = color_dict[taxel_predictions_info[n][0]]
+            V.add_marker((100*n)+i,total_taxels_position[n][i], contact_color)
