@@ -2,19 +2,23 @@
 	"info":{
 		"file_version":"2",
 		"type":"rigid_body",
-		"name":"H02",
-		"application":"CoLLaboratE Project",
-		"description":"Gripper Handle 2"
+		"name":"CoLLaboratE Handle 02",
+		"application":"",
+		"description":""
 	},
 	"skin":{
 		"n_taxels":680,
 		"n_faces":1348,
-		"parent_frame":{
-				"type":"ROS",
-				"name":"tfh2"
-			},
+		"parent_frames":[
+			{
+				"key":0,
+				"id":0,
+				"type":"",
+				"name":"kFlange",
+				"tf_matrix":[0.7071,0.7071,0,0,-0.7071,0.7071,0,0,0,0,1,0,0,0,0.024,1]
+			}
+		],
 		"taxels":[
-		[
 			{
 				"id":35201,
 				"x":[-0.078,0.0118034487,0.03185280255],
@@ -4775,7 +4779,6 @@
 				"type":"pressure",
 				"cut":0
 			}
-		  ]
 		],
 		"faces":[
 			[225,13,226],

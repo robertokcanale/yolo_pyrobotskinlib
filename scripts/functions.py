@@ -2,6 +2,7 @@ import numpy as np
 import argparse
 import torch
 import cv2
+import random
 import time
 from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
@@ -105,27 +106,62 @@ def taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info):
     total_taxel_responses = np.empty((bb_number,), dtype = object)
     total_taxels_position = np.empty((bb_number,), dtype = object)
     average_responses = np.empty((bb_number,), dtype = object)
+    bb_centroid = np.empty((bb_number,), dtype = object)
 
+    #get total responses
     for n in range(bb_number):
         taxel_response = [] #empty array for the responses of a single bounding box
         taxels_position = [] #empty array for the idus of a single bounding box
         for i in taxel_predictions[n]:
             if S.taxels[i].get_taxel_response() != 0: 
                 taxel_response.append(S.taxels[i].get_taxel_response()) 
-                taxels_position.append(S.taxels[i].get_taxel_position())              
-        total_taxel_responses[n] = taxel_response
-        total_taxels_position[n] = taxels_position
-
+                taxels_position.append(S.taxels[i].get_taxel_position()) 
+        if taxel_response == [] or taxels_position == []:
+            total_taxel_responses[n] = []
+            total_taxels_position[n] = []
+        else: 
+            total_taxel_responses[n] = taxel_response
+            total_taxels_position[n] = taxels_position
+    
+    #get average responses including taxels with 0 response
     for n in range(bb_number):
-        average_response = sum(total_taxel_responses[n]) / taxel_predictions_info[n][2]
-        average_responses[n] = average_response
-        print("Average response of", taxel_predictions_info[n][0], "is", average_response)
-
-    return total_taxel_responses, average_responses, total_taxels_position
-
-
-def marker_visualization(bb_number, V, total_taxels_position, taxel_predictions_info, color_dict):
+        if len(total_taxels_position[n]) != 0:
+            average_response = sum(total_taxel_responses[n])/taxel_predictions_info[n][2]
+            average_responses[n] = average_response
+            print("Average Response of", taxel_predictions_info[n][0], "is", average_responses[n])
+    
+     
+    #get average response position
     for n in range(bb_number):
-        for i in range(int((np.size(total_taxels_position[n])) / 3)):
+        average_position = [0.0,0.0,0.0]
+        if len(total_taxels_position[n]) != 0:
+            for i in range(len(total_taxels_position[n])):
+                average_position[0] = average_position[0] + total_taxels_position[n][i][0]
+                average_position[1] = average_position[1] + total_taxels_position[n][i][1]
+                average_position[2] = average_position[2] + total_taxels_position[n][i][2]
+            average_position[0] = average_position[2] /len(total_taxels_position[n])
+            average_position[1] = average_position[2] /len(total_taxels_position[n])
+            average_position[2] = average_position[2] /len(total_taxels_position[n])
+
+            bb_centroid[n] = average_position
+            print("Position of Centroid", taxel_predictions_info[n][0], "is", bb_centroid[n])
+    
+    return total_taxel_responses, average_responses, total_taxels_position, bb_centroid
+
+
+def total_responses_visualization(bb_number, V, total_taxels_position, taxel_predictions_info, color_dict):
+    if bb_number !=0:
+        for n in range(bb_number):
             contact_color = color_dict[taxel_predictions_info[n][0]]
-            V.add_marker((100*n)+i,total_taxels_position[n][i], contact_color)
+            for i in range(len(total_taxels_position[n])):
+                V.add_marker(1+(600*n)+i,total_taxels_position[n][i], contact_color)
+
+
+def average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions_info, color_dict ):
+    if bb_number !=0:
+        for n in range(bb_number):
+            contact_color = color_dict[taxel_predictions_info[n][0]]
+            V.add_marker((n*30+2*n),bb_centroid[n], contact_color)
+
+
+
