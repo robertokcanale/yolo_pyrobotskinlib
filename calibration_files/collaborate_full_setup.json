@@ -1,0 +1,14 @@
+{
+    "info": {
+        "file_version": 2,
+        "type": "robot_skin",
+        "application": "CoLLaboratE Project",
+        "description": "Full Setup"
+    },
+    "skin": {
+        "number_of_patches":1,
+		"patches": [
+            "collaborate_handle_01.json"
+        ]
+    }
+}
