@@ -94,7 +94,12 @@ def bb_active_taxel (bb_number, bb_predictions_reshaped, TIB, skin_faces):
                 faces_predictions.append(skin_faces[face_index][2])
 
                 face_index_previous = face_index
-        taxel_predictions[n] = set(faces_predictions) #set rmoves duplicates
+
+        if faces_predictions == []: #check for a bug
+            taxel_predictions[n] = []
+        else:
+            taxel_predictions[n] = set(faces_predictions) #set rmoves duplicates
+
         info.append(bb_predictions_reshaped[n].label)
         info.append(bb_predictions_reshaped[n].confidence)
         info.append(len(set(faces_predictions)))
@@ -129,6 +134,8 @@ def taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info):
             average_response = sum(total_taxel_responses[n])/taxel_predictions_info[n][2]
             average_responses[n] = average_response
             print("Average Response of", taxel_predictions_info[n][0], "is", average_responses[n])
+        else:
+            average_responses[n] = 0.0
     
      
     #get average response position
@@ -145,6 +152,8 @@ def taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info):
 
             bb_centroid[n] = average_position
             print("Position of Centroid", taxel_predictions_info[n][0], "is", bb_centroid[n])
+        else:
+            bb_centroid[n] = []
     
     return total_taxel_responses, average_responses, total_taxels_position, bb_centroid
 
