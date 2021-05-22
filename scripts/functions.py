@@ -43,10 +43,10 @@ class BoundingBoxReshaped:
 def reshape_coordinates_bb (coord_in, width_i, height_i, width_o, height_o):
     coord_out = np.zeros(len(coord_in), dtype= np.int32)
     for i in range(len(coord_in)):
-        coord_out[0] = int(max(float(0), coord_in[0]*width_o/width_i))  #x1
-        coord_out[1] = int(max(float(0), coord_in[1]*height_o/height_i))   #y1
-        coord_out[2] = int(max(float(0), coord_in[2]*width_o/width_i))  #x2
-        coord_out[3] = int(max(float(0), coord_in[3]*height_o/height_i)) #y2
+        coord_out[0] = int(max(float(0), (coord_in[0]*width_o/width_i)))  #x1
+        coord_out[1] = int(max(float(0), (coord_in[1]*height_o/height_i)))   #y1
+        coord_out[2] = int(max(float(0), (coord_in[2]*width_o/width_i))) #x2
+        coord_out[3] = int(max(float(0), (coord_in[3]*height_o/height_i))) #y2
     return coord_out
 
 #Create a Bounding Box object with the predictions
@@ -64,7 +64,7 @@ def bounding_box_predictions(det, bb_number, names):
 def bounding_box_predictions_reshaped(bb_predictions, bb_number, I_backtorgb, colors, rows, cols):
     bb_predictions_reshaped = [BoundingBoxReshaped() for i in range(bb_number)]
     for i in range(bb_number): 
-        xyxy = reshape_coordinates_bb(bb_predictions[i].coordinates, 416, 416, rows, cols) #for a different image size
+        xyxy = reshape_coordinates_bb(bb_predictions[i].coordinates, 416, 416, cols, rows) #for a different image size
         bb_predictions_reshaped[i].set_bb(bb_predictions[i].id, bb_predictions[i].label, bb_predictions[i].confidence, xyxy)
 
     for i in range(bb_number):  #reshaped detections on image

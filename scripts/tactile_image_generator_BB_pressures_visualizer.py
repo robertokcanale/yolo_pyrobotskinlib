@@ -69,7 +69,7 @@ if __name__ == '__main__':
         I = I.reshape([rows,cols]) #reshape it into a 2d array
         I_backtorgb = cv2.cvtColor(I,cv2.COLOR_GRAY2RGB)  #converting from grayscale to rgb 
         I_resized = cv2.resize(I_backtorgb, (416,416), interpolation=cv2.INTER_AREA) #resize it for yolo
-        erode_kernel = np.ones((2, 2), np.uint8) #erode the image
+        erode_kernel = np.ones((2, 2), np.uint8) #erode the image, it might do prediction a bit better
         I_erode = cv2.erode(I_resized, erode_kernel) 
         I_gaussfilter = cv2.blur(I_erode,(3,3),0)   #apply gaussian filtering  
         I_transposed = np.transpose(I_gaussfilter, (2, 0, 1)) #transposing the image for processing
@@ -122,8 +122,8 @@ if __name__ == '__main__':
         #average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions_info, color_dict )
 
         
-        #im_to_show = cv2.resize(I_resized, (500, 500), interpolation = cv2.INTER_AREA)
-        cv2.imshow('Tactile Image',I_resized)
+        im_to_show = cv2.resize(I_resized, (500, 500), interpolation = cv2.INTER_AREA)
+        cv2.imshow('Tactile Image',im_to_show)
         cv2.waitKey(1)
 
         cv2.imshow('Tactile Image  Original',I_backtorgb)

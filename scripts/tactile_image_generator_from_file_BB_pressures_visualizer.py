@@ -108,20 +108,24 @@ if __name__ == '__main__':
         taxel_predictions, taxel_predictions_info = bb_active_taxel(bb_number, bb_predictions_reshaped, TIB, skin_faces)
         
         #GET RESPONSE OF ACTIVATED TAXELS
-        total_taxel_responses, average_responses, total_taxels_position = taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info)
+        total_taxel_responses, average_responses, total_taxels_position, bb_centroid = taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info)
 
-        print("Taxel Predictions:", taxel_predictions) #here I have all the taxel indexes of my predictions, however i need to clean them 
-        print("Taxel Predictions Info:", taxel_predictions_info) #here I have all the taxel indexes of my predictions, however i need to clean them 
-        print("Taxel Responses:", total_taxel_responses) # I get the taxels with response different from 0
-        print("Taxel Positions:", total_taxels_position)
+        #print("Taxel Predictions:", taxel_predictions) #here I have all the taxel indexes of my predictions, however i need to clean them 
+        #print("Taxel Predictions Info:", taxel_predictions_info) #here I have all the taxel indexes of my predictions, however i need to clean them 
+        #print("Taxel Responses:", total_taxel_responses) 
+        #print("Taxel Positions:", total_taxels_position)
+        print("Average Taxel Responses:", average_responses) 
+        print("Average Taxel Positions:", bb_centroid)
         
         #VISUALIZE MARKERS
-        marker_visualization(bb_number, V, total_taxels_position, taxel_predictions_info, color_dict )
+        total_responses_visualization(bb_number, V, total_taxels_position, taxel_predictions_info, color_dict )
+        #average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions_info, color_dict )
+
 
         
         im_to_show = cv2.resize(I_resized, (500, 500), interpolation = cv2.INTER_AREA)
-        #cv2.imshow('Tactile Image',im_to_show)
-        #cv2.waitKey(1)
+        cv2.imshow('Tactile Image',im_to_show)
+        cv2.waitKey(1)
 
         cv2.imshow('Tactile Image  Original',I_backtorgb)
         cv2.waitKey(1)
