@@ -3,6 +3,7 @@ import argparse
 import torch
 import cv2
 import random
+from operator import add 
 import time
 from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
@@ -73,10 +74,11 @@ def bounding_box_predictions_reshaped(bb_predictions, bb_number, I_backtorgb, co
 
     return bb_predictions_reshaped, I_backtorgb
 
-#Get list of active taxels per bounding box on the image 
-def bb_active_taxel (bb_number, bb_predictions_reshaped, TIB, skin_faces):
+#Get list of active taxels per bounding box on the image, create an array of the taxel center
+def bb_active_taxel (bb_number, S, bb_predictions_reshaped, TIB, skin_faces):
     taxel_predictions = np.empty((bb_number,), dtype = object)
     taxel_predictions_info = np.empty((bb_number,), dtype = object)
+    face_centers = np.empty((bb_number,), dtype = object)
     for n in range(bb_number):
         faces_predictions = []
         info = []
@@ -84,10 +86,9 @@ def bb_active_taxel (bb_number, bb_predictions_reshaped, TIB, skin_faces):
         for i in range(bb_predictions_reshaped[n].coordinates_reshaped[0], bb_predictions_reshaped[n].coordinates_reshaped[2]):
             for j in range(bb_predictions_reshaped[n].coordinates_reshaped[1], bb_predictions_reshaped[n].coordinates_reshaped[3]):
                 face_index = TIB.get_pixel_face_index( i,  j)
-                if face_index == (-1) or face_index >= 1218:
-                    print("Wrong Face")
+                if face_index == (-1) or face_index >= 1218: #checking that taxels are withing boundss
                     break
-                if face_index == face_index_previous: # not recounting the same taxel over and over
+                if face_index == face_index_previous: #not recounting the same taxel over and over
                     break
                 faces_predictions.append(skin_faces[face_index][0])
                 faces_predictions.append(skin_faces[face_index][1])
@@ -100,11 +101,21 @@ def bb_active_taxel (bb_number, bb_predictions_reshaped, TIB, skin_faces):
         else:
             taxel_predictions[n] = set(faces_predictions) #set rmoves duplicates
 
+        #Position fo the faces
+        faces_positions = []
+        for k in range(0, len(faces_predictions), 3):
+            sum_first_two = list(map(add, S.taxels[faces_predictions[k]].get_taxel_position(),S.taxels[faces_predictions[k+1]].get_taxel_position())) 
+            sum_of_three = list(map(add, sum_first_two, S.taxels[faces_predictions[k+2]].get_taxel_position())) 
+            face_position = [x / 3 for x in sum_of_three]
+            faces_positions.append(face_position)
+        face_centers[n] = faces_positions
+
+        #Prediction info
         info.append(bb_predictions_reshaped[n].label)
         info.append(bb_predictions_reshaped[n].confidence)
         info.append(len(set(faces_predictions)))
         taxel_predictions_info[n] = info #this is the name, conf and # active taxels per prediction
-    return taxel_predictions, taxel_predictions_info
+    return taxel_predictions, taxel_predictions_info, face_centers
 
 #Get taxel responses for all bounding boxes 
 def taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info):
@@ -146,12 +157,12 @@ def taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info):
                 average_position[0] = average_position[0] + total_taxels_position[n][i][0]
                 average_position[1] = average_position[1] + total_taxels_position[n][i][1]
                 average_position[2] = average_position[2] + total_taxels_position[n][i][2]
-            average_position[0] = average_position[2] /len(total_taxels_position[n])
-            average_position[1] = average_position[2] /len(total_taxels_position[n])
+            average_position[0] = average_position[0] /len(total_taxels_position[n])
+            average_position[1] = average_position[1] /len(total_taxels_position[n])
             average_position[2] = average_position[2] /len(total_taxels_position[n])
 
             bb_centroid[n] = average_position
-            print("Position of Centroid", taxel_predictions_info[n][0], "is", bb_centroid[n])
+            #print("Position of Centroid", taxel_predictions_info[n][0], "is", bb_centroid[n])
         else:
             bb_centroid[n] = []
     
@@ -172,5 +183,11 @@ def average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions
             contact_color = color_dict[taxel_predictions_info[n][0]]
             V.add_marker((n*30+2*n),bb_centroid[n], contact_color)
 
+def total_faces_visualization(bb_number, V, face_centers, taxel_predictions_info, color_dict):
+    if bb_number !=0:
+        for n in range(bb_number):
+            contact_color = color_dict[taxel_predictions_info[n][0]]
+            for i in range(len(face_centers[n])):
+                V.add_marker(1+(400*n)+ 40 + i,face_centers[n][i], contact_color)
 
 

@@ -105,7 +105,7 @@ if __name__ == '__main__':
         bb_predictions_reshaped, I_backtorgb = bounding_box_predictions_reshaped(bb_predictions, bb_number, I_backtorgb, colors, rows, cols)
         
         #ACTIVATED TAXELS FOR EACH BB
-        taxel_predictions, taxel_predictions_info = bb_active_taxel(bb_number, bb_predictions_reshaped, TIB, skin_faces)
+        taxel_predictions, taxel_predictions_info, face_centers = bb_active_taxel(bb_number, S, bb_predictions_reshaped, TIB, skin_faces)
         
         #GET RESPONSE OF ACTIVATED TAXELS
         total_taxel_responses, average_responses, total_taxels_position, bb_centroid = taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info)
@@ -114,11 +114,12 @@ if __name__ == '__main__':
         #print("Taxel Predictions Info:", taxel_predictions_info) #here I have all the taxel indexes of my predictions, however i need to clean them 
         #print("Taxel Responses:", total_taxel_responses) 
         #print("Taxel Positions:", total_taxels_position)
-        print("Average Taxel Responses:", average_responses) 
-        print("Average Taxel Positions:", bb_centroid)
+        #print("Average Taxel Responses:", average_responses) 
+        #print("Average Taxel Positions:", bb_centroid)
         
         #VISUALIZE MARKERS
         total_responses_visualization(bb_number, V, total_taxels_position, taxel_predictions_info, color_dict )
+        total_faces_visualization(bb_number, V, face_centers, taxel_predictions_info, color_dict)
         #average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions_info, color_dict )
 
         
@@ -126,8 +127,8 @@ if __name__ == '__main__':
         cv2.imshow('Tactile Image',im_to_show)
         cv2.waitKey(1)
 
-        cv2.imshow('Tactile Image  Original',I_backtorgb)
-        cv2.waitKey(1)
+        #cv2.imshow('Tactile Image  Original',I_backtorgb)
+        #cv2.waitKey(1)
 
-        time.sleep(0.5)
+        time.sleep(1)
         V.remove_markers()
