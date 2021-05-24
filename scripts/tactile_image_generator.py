@@ -37,6 +37,7 @@ if __name__ == '__main__':
     iou_thres = 0.5
     device = '0' #or CPU if needed
     colors = [[0,0,255], [0,255,0], [255,0,0], [100,100,100], [0,50,150], [75,150,0] ] #6 classes
+               #['index',   'middle',   palm',    'pinkie',    'ring',      'thumb']
     #GPU
     set_logging()
     device = select_device(device)

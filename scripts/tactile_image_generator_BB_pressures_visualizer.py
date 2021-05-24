@@ -50,6 +50,7 @@ if __name__ == '__main__':
     iou_thres = 0.5
     device = '0' #'0' or CPU if needed
     colors = [[0,0,255], [0,255,0], [255,0,0], [100,100,100], [0,50,150], [75,150,0] ] #6 classes
+               #['index',   'middle',   palm',    'pinkie',    'ring',      'thumb']
     color_dict = dict({ 'palm':[0,0,255, 1], 'thumb':[0,255,0,1], 'index':[255,0,0,1], 'middle':[0,255,255,1], 'ring':[170,80,0,1], 'pinkie':[180,180,180,1]  })
 
     #GPU
@@ -69,10 +70,10 @@ if __name__ == '__main__':
         I = I.reshape([rows,cols]) #reshape it into a 2d array
         I_backtorgb = cv2.cvtColor(I,cv2.COLOR_GRAY2RGB)  #converting from grayscale to rgb 
         I_resized = cv2.resize(I_backtorgb, (416,416), interpolation=cv2.INTER_AREA) #resize it for yolo
-        erode_kernel = np.ones((2, 2), np.uint8) #erode the image, it might do prediction a bit better
-        I_erode = cv2.erode(I_resized, erode_kernel) 
-        I_gaussfilter = cv2.blur(I_erode,(3,3),0)   #apply gaussian filtering  
-        I_transposed = np.transpose(I_gaussfilter, (2, 0, 1)) #transposing the image for processing
+        #erode_kernel = np.ones((2, 2), np.uint8) #erode the image, it might do prediction a bit better
+        #I_erode = cv2.erode(I_resized, erode_kernel) 
+        #I_gaussfilter = cv2.blur(I_erode,(3,3),0)   #apply gaussian filtering  
+        I_transposed = np.transpose(I_resized, (2, 0, 1)) #transposing the image for processing
 
         #YOLO AND DATA PREPROCESSING
         img = torch.from_numpy(I_transposed).to(device)

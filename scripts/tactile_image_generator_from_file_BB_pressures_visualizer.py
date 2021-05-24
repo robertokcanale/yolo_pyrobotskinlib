@@ -50,6 +50,7 @@ if __name__ == '__main__':
     iou_thres = 0.5
     device = '0' #'0' or CPU if needed
     colors = [[0,0,255], [0,255,0], [255,0,0], [100,100,100], [0,50,150], [75,150,0] ] #6 classes
+               #['index',   'middle',   palm',    'pinkie',    'ring',      'thumb']
     color_dict = dict({ 'palm':[0,0,255, 1], 'thumb':[0,255,0,1], 'index':[255,0,0,1], 'middle':[100,100,100, 1], 'ring':[0,50,150,1], 'pinkie':[75,150,0,1]  })
 
     #GPU
