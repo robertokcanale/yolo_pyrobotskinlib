@@ -109,13 +109,13 @@ def bb_active_taxel (bb_number, T, bb_predictions_reshaped, TIB, skin_faces):
     return taxel_predictions, pixel_positions, taxel_predictions_info
 
 #Get taxel responses for all bounding boxes 
-def taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info):
+def taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info, pixel_positions):
     total_taxel_responses = np.empty((bb_number,), dtype = object)
     total_taxels_position = np.empty((bb_number,), dtype = object)
     average_responses = np.empty((bb_number,), dtype = object)
     bb_centroid = np.empty((bb_number,), dtype = object)
 
-    #get total responses
+    #TOTAL RESPONSES
     for n in range(bb_number):
         taxel_response = [] #empty array for the responses of a single bounding box
         taxels_position = [] #empty array for the idus of a single bounding box
@@ -130,7 +130,7 @@ def taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info):
             total_taxel_responses[n] = taxel_response
             total_taxels_position[n] = taxels_position
     
-    #get average responses including taxels with 0 response
+    #AVERAGE RESPONSES including taxels with 0 response
     for n in range(bb_number):
         if len(total_taxels_position[n]) != 0:
             average_response = sum(total_taxel_responses[n])/taxel_predictions_info[n][2]
@@ -139,18 +139,17 @@ def taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info):
         else:
             average_responses[n] = 0.0
     
-     
-    #get average response position
+    #AVERAGE POSITION
     for n in range(bb_number):
         average_position = [0.0,0.0,0.0]
-        if len(total_taxels_position[n]) != 0:
-            for i in range(len(total_taxels_position[n])):
-                average_position[0] = average_position[0] + total_taxels_position[n][i][0]
-                average_position[1] = average_position[1] + total_taxels_position[n][i][1]
-                average_position[2] = average_position[2] + total_taxels_position[n][i][2]
-            average_position[0] = average_position[0] /len(total_taxels_position[n])
-            average_position[1] = average_position[1] /len(total_taxels_position[n])
-            average_position[2] = average_position[2] /len(total_taxels_position[n])
+        if len(pixel_positions[n]) != 0:
+            for i in range(len(pixel_positions[n])):
+                average_position[0] = average_position[0] + pixel_positions[n][i][0]
+                average_position[1] = average_position[1] + pixel_positions[n][i][1]
+                average_position[2] = average_position[2] + pixel_positions[n][i][2]
+            average_position[0] = average_position[0] /len(pixel_positions[n])
+            average_position[1] = average_position[1] /len(pixel_positions[n])
+            average_position[2] = average_position[2] /len(pixel_positions[n])
 
             bb_centroid[n] = average_position
             #print("Position of Centroid", taxel_predictions_info[n][0], "is", bb_centroid[n])
@@ -179,13 +178,12 @@ def average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions
             contact_color = color_dict[taxel_predictions_info[n][0]]
             V.add_marker((n*30+2*n),bb_centroid[n], contact_color)
 
-def total_faces_visualization(bb_number, V, face_centers, taxel_predictions_info, color_dict):
-    if bb_number !=0:
-        counter = 0
-        for n in range(bb_number):
-            contact_color = color_dict[taxel_predictions_info[n][0]]
-            for i in range(len(face_centers[n])):
-                V.add_marker(counter,face_centers[n][i], contact_color)
-                counter += 1
-
-
+def open_files():
+    palm_file = open(("../data_files/palm.txt"),"w+") 
+    thumb_file = open(("../data_files/thumb.txt"),"w+") 
+    index_file = open(("../data_files/index.txt"),"w+") 
+    middle_file = open(("../data_files/middle.txt"),"w+") 
+    ring_file = open(("../data_files/ring.txt"),"w+") 
+    pinkie_file = open(("../data_files/pinkie.txt"),"w+") 
+    
+    return palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file

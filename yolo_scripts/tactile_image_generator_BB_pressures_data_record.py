@@ -22,12 +22,6 @@ if __name__ == '__main__':
     S = rsl.RobotSkin("../calibration_files/collaborate_handle_1_ale.json")
     u = rsl.SkinUpdaterFromShMem(S)
     T = rsl.TactileMap(S,0)
-    #BUILD MESH VISUALIZER
-    V = rsl.RobotSkinViewer(500,500,20000)
-    V2 = rsl.RobotSkinViewer(500,500,20000)
-    #RENDER MESH
-    V.render_object(S,"Robot")
-    V2.render_object(S,"Robot_Markers")
     #BUILD IMAGE
     TIB = rsl.TactileImageBuilder(T)
     TIB.build_tactile_image()
@@ -60,7 +54,7 @@ if __name__ == '__main__':
     model = attempt_load(weights, map_location=device)
     # Get names and colors
     names = model.module.names if hasattr(model, 'module') else model.names
-
+    palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file = open_files()
 
     while True:
         #GET NEW DATA
@@ -70,9 +64,6 @@ if __name__ == '__main__':
         I = I.reshape([rows,cols]) #reshape it into a 2d array
         I_backtorgb = cv2.cvtColor(I,cv2.COLOR_GRAY2RGB)  #converting from grayscale to rgb 
         I_resized = cv2.resize(I_backtorgb, (416,416), interpolation=cv2.INTER_AREA) #resize it for yolo
-        #erode_kernel = np.ones((2, 2), np.uint8) #erode the image, it might do prediction a bit better
-        #I_erode = cv2.erode(I_resized, erode_kernel) 
-        #I_gaussfilter = cv2.blur(I_erode,(3,3),0)   #apply gaussian filtering  
         I_transposed = np.transpose(I_resized, (2, 0, 1)) #transposing the image for processing
 
         #YOLO AND DATA PREPROCESSING
@@ -106,23 +97,49 @@ if __name__ == '__main__':
         bb_predictions_reshaped, I_backtorgb = bounding_box_predictions_reshaped(bb_predictions, bb_number, I_backtorgb, colors, rows, cols)
         
         #ACTIVATED TAXELS FOR EACH BB
-        taxel_predictions, taxel_predictions_info, face_centers = bb_active_taxel(bb_number, S, bb_predictions_reshaped, TIB, skin_faces)
+        taxel_predictions, pixel_positions, taxel_predictions_info = bb_active_taxel(bb_number, T, bb_predictions_reshaped, TIB, skin_faces)
         
         #GET RESPONSE OF ACTIVATED TAXELS
-        total_taxel_responses, average_responses, total_taxels_position, bb_centroid = taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info)
+        total_taxel_responses, average_responses, total_taxels_position, bb_centroid = taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info, pixel_positions)
 
         #print("Taxel Predictions:", taxel_predictions) #here I have all the taxel indexes of my predictions, however i need to clean them 
         #print("Taxel Predictions Info:", taxel_predictions_info) #here I have all the taxel indexes of my predictions, however i need to clean them 
         #print("Taxel Responses:", total_taxel_responses) 
         #print("Taxel Positions:", total_taxels_position)
-        #print("Average Taxel Responses:", average_responses) 
-        #print("Average Taxel Positions:", bb_centroid)
-        
-        #VISUALIZE MARKERS
-        total_responses_visualization(bb_number, V, total_taxels_position, taxel_predictions_info, color_dict )
-        total_faces_visualization(bb_number, V, face_centers, taxel_predictions_info, color_dict)
-        #average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions_info, color_dict )
+        print("Average Taxel Responses:", average_responses) 
+        print("Average Taxel Positions:", bb_centroid)
+     
 
+        s_palm = str(round(time.time(),5)) + " " + str(0.0) + "\n"
+        s_thumb = str(round(time.time(),5)) + " " + str(0.0) + "\n"
+        s_index = str(round(time.time(),5)) + " " + str(0.0) + "\n"
+        s_middle = str(round(time.time(),5)) + " " + str(0.0) + "\n"
+        s_ring = str(round(time.time(),5)) + " " + str(0.0) + "\n"
+        s_pinkie = str(round(time.time(),5)) + " " + str(0.0) + "\n"
+        #initialize strings to write
+        for n in range(bb_number):
+
+            if taxel_predictions_info[n][0] == "palm":
+                s_palm = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
+            if taxel_predictions_info[n][0] == "thumb":
+                s_thumb = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
+            if taxel_predictions_info[n][0] == "index":
+                s_index = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
+            if taxel_predictions_info[n][0] == "middle":
+                s_middle = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
+            if taxel_predictions_info[n][0] == "ring":
+                s_ring = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
+            if taxel_predictions_info[n][0] == "pinkie":
+                s_pinkie = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
+            
+        palm_file.write(s_palm)
+        thumb_file.write(s_thumb)
+        index_file.write(s_index)
+        middle_file.write(s_middle)
+        ring_file.write(s_ring)
+        pinkie_file.write(s_pinkie)
+           
+        
         
         im_to_show = cv2.resize(I_resized, (500, 500), interpolation = cv2.INTER_AREA)
         cv2.imshow('Tactile Image',im_to_show)
@@ -131,5 +148,5 @@ if __name__ == '__main__':
         #cv2.imshow('Tactile Image  Original',I_backtorgb)
         #cv2.waitKey(1)
 
-        time.sleep(1)
-        V.remove_markers()
+        #time.sleep(0.0001)
+    
