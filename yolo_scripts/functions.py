@@ -58,7 +58,7 @@ def bounding_box_predictions(det, bb_number, names):
         confidence = round(det[i][4].item(),5)
         obj_class_id = int(det[i][5].item())
         obj_class = names[int(det[i][5].item())]
-        bb_predictions[i].set_bb(obj_class_id, obsj_class, confidence, coordinates)
+        bb_predictions[i].set_bb(obj_class_id, obj_class, confidence, coordinates)
     return bb_predictions
 
 #Create a Reshaped Bounding Box object with the predictions and image
@@ -109,26 +109,32 @@ def bb_active_taxel (bb_number, T, bb_predictions_reshaped, TIB, skin_faces):
     return taxel_predictions, pixel_positions, taxel_predictions_info
 
 #Get taxel responses for all bounding boxes 
-def taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info, pixel_positions):
+def get_taxel_data(bb_number, S, taxel_predictions, taxel_predictions_info, pixel_positions):
     total_taxel_responses = np.empty((bb_number,), dtype = object)
     total_taxels_position = np.empty((bb_number,), dtype = object)
+    total_taxel_normals = np.empty((bb_number,), dtype = object)
     average_responses = np.empty((bb_number,), dtype = object)
     bb_centroid = np.empty((bb_number,), dtype = object)
-
     #TOTAL RESPONSES
     for n in range(bb_number):
         taxel_response = [] #empty array for the responses of a single bounding box
         taxels_position = [] #empty array for the idus of a single bounding box
+        taxel_normal = [] #empty array for the normals single bounding box
         for i in taxel_predictions[n]:
             if S.taxels[i].get_taxel_response() != 0: 
                 taxel_response.append(S.taxels[i].get_taxel_response()) 
                 taxels_position.append(S.taxels[i].get_taxel_position()) 
+                taxel_normal.append(S.taxels[i].get_taxel_normal()) 
+                    
+
         if taxel_response == [] or taxels_position == []:
             total_taxel_responses[n] = []
             total_taxels_position[n] = []
+            total_taxel_normals[n] = []
         else: 
             total_taxel_responses[n] = taxel_response
             total_taxels_position[n] = taxels_position
+            total_taxel_normals[n] = taxel_normal
     
     #AVERAGE RESPONSES including taxels with 0 response
     for n in range(bb_number):
@@ -156,18 +162,18 @@ def taxel_responses(bb_number, S, taxel_predictions, taxel_predictions_info, pix
         else:
             bb_centroid[n] = []
     
-    return total_taxel_responses, average_responses, total_taxels_position, bb_centroid
+    return total_taxel_responses, average_responses, total_taxels_position, bb_centroid, total_taxel_normals
 
 
 def total_responses_visualization(bb_number, V, pixel_positions, taxel_predictions_info, color_dict):
     if bb_number !=0:
+        counter = 0
         for n in range(bb_number):
-            counter = 0
             contact_color = color_dict[taxel_predictions_info[n][0]]
             for i in range(len(pixel_positions[n])):
                 a = random.randint(0,50)
                 if a == 4:
-                    V.add_marker(50*n+counter,pixel_positions[n][i], contact_color)
+                    V.add_marker(counter,pixel_positions[n][i], contact_color)
                 counter += 1
 
 
@@ -187,7 +193,7 @@ def open_files():
     
     return palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file
 
-def write_resèpmses(bb_number, taxel_predictions_info, average_responses, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file):
+def write_responses(bb_number, taxel_predictions_info, average_responses, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file):
     s_palm = str(round(time.time(),5)) + " " + str(0.0) + "\n"
     s_thumb = str(round(time.time(),5)) + " " + str(0.0) + "\n"
     s_index = str(round(time.time(),5)) + " " + str(0.0) + "\n"
