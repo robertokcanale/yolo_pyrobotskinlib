@@ -58,7 +58,7 @@ def bounding_box_predictions(det, bb_number, names):
         confidence = round(det[i][4].item(),5)
         obj_class_id = int(det[i][5].item())
         obj_class = names[int(det[i][5].item())]
-        bb_predictions[i].set_bb(obj_class_id, obj_class, confidence, coordinates)
+        bb_predictions[i].set_bb(obj_class_id, obsj_class, confidence, coordinates)
     return bb_predictions
 
 #Create a Reshaped Bounding Box object with the predictions and image
@@ -171,7 +171,6 @@ def total_responses_visualization(bb_number, V, pixel_positions, taxel_predictio
                 counter += 1
 
 
-
 def average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions_info, color_dict ):
     if bb_number !=0:
         for n in range(bb_number):
@@ -187,3 +186,32 @@ def open_files():
     pinkie_file = open(("../data_files/pinkie.txt"),"w+") 
     
     return palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file
+
+def write_resèpmses(bb_number, taxel_predictions_info, average_responses, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file):
+    s_palm = str(round(time.time(),5)) + " " + str(0.0) + "\n"
+    s_thumb = str(round(time.time(),5)) + " " + str(0.0) + "\n"
+    s_index = str(round(time.time(),5)) + " " + str(0.0) + "\n"
+    s_middle = str(round(time.time(),5)) + " " + str(0.0) + "\n"
+    s_ring = str(round(time.time(),5)) + " " + str(0.0) + "\n"
+    s_pinkie = str(round(time.time(),5)) + " " + str(0.0) + "\n"
+    #initialize strings to write
+    for n in range(bb_number):
+        if taxel_predictions_info[n][0] == "palm":
+            s_palm = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
+        if taxel_predictions_info[n][0] == "thumb":
+            s_thumb = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
+        if taxel_predictions_info[n][0] == "index":
+            s_index = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
+        if taxel_predictions_info[n][0] == "middle":
+            s_middle = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
+        if taxel_predictions_info[n][0] == "ring":
+            s_ring = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
+        if taxel_predictions_info[n][0] == "pinkie":
+            s_pinkie = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
+            
+    palm_file.write(s_palm)
+    thumb_file.write(s_thumb)
+    index_file.write(s_index)
+    middle_file.write(s_middle)
+    ring_file.write(s_ring)
+    pinkie_file.write(s_pinkie)

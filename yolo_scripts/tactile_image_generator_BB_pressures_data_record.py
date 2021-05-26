@@ -108,39 +108,9 @@ if __name__ == '__main__':
         #print("Taxel Positions:", total_taxels_position)
         print("Average Taxel Responses:", average_responses) 
         print("Average Taxel Positions:", bb_centroid)
-     
 
-        s_palm = str(round(time.time(),5)) + " " + str(0.0) + "\n"
-        s_thumb = str(round(time.time(),5)) + " " + str(0.0) + "\n"
-        s_index = str(round(time.time(),5)) + " " + str(0.0) + "\n"
-        s_middle = str(round(time.time(),5)) + " " + str(0.0) + "\n"
-        s_ring = str(round(time.time(),5)) + " " + str(0.0) + "\n"
-        s_pinkie = str(round(time.time(),5)) + " " + str(0.0) + "\n"
-        #initialize strings to write
-        for n in range(bb_number):
+        write_responses(bb_number, taxel_predictions_info, average_responses, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file)
 
-            if taxel_predictions_info[n][0] == "palm":
-                s_palm = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
-            if taxel_predictions_info[n][0] == "thumb":
-                s_thumb = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
-            if taxel_predictions_info[n][0] == "index":
-                s_index = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
-            if taxel_predictions_info[n][0] == "middle":
-                s_middle = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
-            if taxel_predictions_info[n][0] == "ring":
-                s_ring = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
-            if taxel_predictions_info[n][0] == "pinkie":
-                s_pinkie = str(round(time.time(),5)) + " " + str(average_responses[n]) + "\n"
-            
-        palm_file.write(s_palm)
-        thumb_file.write(s_thumb)
-        index_file.write(s_index)
-        middle_file.write(s_middle)
-        ring_file.write(s_ring)
-        pinkie_file.write(s_pinkie)
-           
-        
-        
         im_to_show = cv2.resize(I_resized, (500, 500), interpolation = cv2.INTER_AREA)
         cv2.imshow('Tactile Image',im_to_show)
         cv2.waitKey(1)
@@ -148,5 +118,5 @@ if __name__ == '__main__':
         #cv2.imshow('Tactile Image  Original',I_backtorgb)
         #cv2.waitKey(1)
 
-        #time.sleep(0.0001)
+        time.sleep(0.001)
     

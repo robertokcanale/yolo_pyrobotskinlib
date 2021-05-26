@@ -27,5 +27,5 @@ hold on
 
 legend({'palm','thumb', 'index', 'middle', 'ring', 'pinkie'}, 'FontSize',15,'Interpreter', 'latex')
 title('Hand Response','FontSize',30,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-xlabel('Time (100ns)','FontSize',25,'Interpreter', 'latex') 
-ylabel('Average Response','FontSize',25,'Interpreter', 'latex') 
+xlabel('Time ms','FontSize',20,'Interpreter', 'latex') 
+ylabel('Average Response','FontSize',20,'Interpreter', 'latex') 
