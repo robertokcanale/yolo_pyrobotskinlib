@@ -32,6 +32,8 @@ if __name__ == '__main__':
     skin_faces = S.get_faces()
     number_of_faces = len(skin_faces)
     taxel_ids = S.get_taxel_ids()
+    number_of_ids = len(taxel_ids)
+
     #INITIALIZE YOLOV5
     parser = argparse.ArgumentParser()
     parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --class 0, or --class 0 2 3')
@@ -100,7 +102,7 @@ if __name__ == '__main__':
         taxel_predictions, pixel_positions, taxel_predictions_info = bb_active_taxel(bb_number, T, bb_predictions_reshaped, TIB, skin_faces)
         
         #GET RESPONSE OF ACTIVATED TAXELS
-        total_taxel_responses, average_responses, total_taxels_position, bb_centroid, total_taxel_normals = get_taxel_data(bb_number, S, taxel_predictions, taxel_predictions_info, pixel_positions)
+        total_taxel_responses, average_responses, total_taxels_position, bb_centroid, total_taxel_normals = get_taxel_data(bb_number, S,T, taxel_predictions, taxel_predictions_info, pixel_positions, number_of_ids)
 
         #print("Taxel Predictions:", taxel_predictions) #here I have all the taxel indexes of my predictions, however i need to clean them 
         #print("Taxel Predictions Info:", taxel_predictions_info) #here I have all the taxel indexes of my predictions, however i need to clean them 

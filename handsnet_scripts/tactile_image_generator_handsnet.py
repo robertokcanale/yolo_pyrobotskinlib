@@ -7,12 +7,8 @@ import torch
 import tensorflow as tf
 import cv2
 from PIL import Image
-from models.experimental import attempt_load
-from utils.datasets import LoadStreams, LoadImages
-from utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
-    scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path
-from utils.plots import plot_one_box
-from utils.torch_utils import select_device, load_classifier, time_synchronized
+from functions import *
+import time
 
 #MAIN
 if __name__ == '__main__':
@@ -40,30 +36,29 @@ if __name__ == '__main__':
     u.start_robot_skin_updater()
     rows = TIB.get_rows()
     cols = TIB.get_cols()
+    #BUILD MESH VISUALIZER
+    V = rsl.RobotSkinViewer(500,500,20000)
+    V2 = rsl.RobotSkinViewer(500,500,20000)
+    #RENDER MESH
+    V.render_object(T,"Robot")
+    V2.render_object(T,"Robot_Markers")
 
-    #LOAD HANDSNET
-    HandsNet = tf.keras.models.load_model('HandsNet_Models/HandsNet_Finetuned_2.h5')
-
-    HandsNet.trainable=False
-
+    #HandsNet = tf.keras.models.load_model('../data/HandsNet_Finetuned.h5')
+    #HandsNet.trainable=False
     while True:
         u.make_this_thread_wait_for_new_data()
 
         I = np.array(TIB.get_tactile_image(),np.uint8) #get the image 
         I = I.reshape([rows,cols]) #reshape it into a 2d array
-        backtorgb = cv2.cvtColor(I,cv2.COLOR_GRAY2RGB)  #converting from grayscale to rgb     
-        I_resized = cv2.resize(backtorgb, (68,100), interpolation=cv2.INTER_AREA)
-        input_arr_hand = np.array([I_resized])  # Convert single image to a batch.
-        hand_contact = HandsNet.predict(input_arr_hand)
-        I_toshow = cv2.resize(backtorgb, (500,500), interpolation=cv2.INTER_AREA)
-        cv2.imshow('Tactile Image',I_toshow)
+        #I_toshow, hand_contact = image_prediction(I, HandsNet)
+        #contact(hand_contact)
+
+        cv2.imshow('Tactile Image',I)
         cv2.waitKey(1)
-        print(hand_contact)
-        if hand_contact[0][0]>0.8:
-            print('Hand')
-        elif hand_contact[0][1]>0.8:
-            print('Non-Hand')
-        else:
-            print('Not Recognized')
-        
+        V.add_marker(0,[0.1,0.1,0], [255,0,0,1])
+        V.add_marker(1,[0.1,0,0], [0,255,0,1])
+        V.add_marker(2,[-0.1,-0.1,0], [0,0,255,1])
+        V.add_marker(3,[0,0,0], [0,0,0,1])
+        time.sleep(2)
+        V.remove_markers()
         #print(  str(u.get_timestamp_in_sec()) + " | " + str(S.taxels[0].get_taxel_response()) )

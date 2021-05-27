@@ -34,11 +34,12 @@ if __name__ == '__main__':
     u.start_robot_skin_updater()
     rows = TIB.get_rows() #y
     cols = TIB.get_cols() #x
-    print(rows, cols)
     #GET SKIN INFO
     skin_faces = S.get_faces()
     number_of_faces = len(skin_faces)
     taxel_ids = S.get_taxel_ids()
+    number_of_ids = len(taxel_ids)
+
     #INITIALIZE YOLOV5
     parser = argparse.ArgumentParser()
     parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --class 0, or --class 0 2 3')
@@ -106,7 +107,7 @@ if __name__ == '__main__':
         #ACTIVATED TAXELS FOR EACH BB
         taxel_predictions, pixel_positions, taxel_predictions_info = bb_active_taxel(bb_number, T, bb_predictions_reshaped, TIB, skin_faces)
         #GET RESPONSE OF ACTIVATED TAXELS
-        #total_taxel_responses, average_responses, total_taxels_position, bb_centroid = get_taxel_data(bb_number, S, taxel_predictions, taxel_predictions_info, pixel_positions)
+        total_taxel_responses, average_responses, total_taxels_3D_position,total_taxels_2D_position, bb_centroid, bb_normal, total_taxel_normals = get_taxel_data(bb_number, S,T, taxel_predictions, taxel_predictions_info, pixel_positions, number_of_ids)
 
         #print("Taxel Predictions:", taxel_predictions) #here I have all the taxel indexes of my predictions, however i need to clean them 
         #print("Taxel Predictions Info:", taxel_predictions_info) #here I have all the taxel indexes of my predictions, however i need to clean them 
@@ -116,12 +117,12 @@ if __name__ == '__main__':
         #print("Average Taxel Positions:", bb_centroid)
         
         #VISUALIZE MARKERS
-        total_responses_visualization(bb_number, V, pixel_positions, taxel_predictions_info, color_dict )
+        #total_responses_visualization(bb_number, V, pixel_positions, taxel_predictions_info, color_dict )
         #total_faces_visualization(bb_number, V, face_centers, taxel_predictions_info, color_dict)
-        #average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions_info, color_dict )
+        average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions_info, color_dict )
 
         cv2.imshow('Tactile Image  Original',I_backtorgb)
         cv2.waitKey(1)
 
         time.sleep(0.1)
-        V.remove_markers()
+        #V.remove_markers()
