@@ -109,6 +109,7 @@ if __name__ == '__main__':
         #GET RESPONSE OF ACTIVATED TAXELS
         total_taxel_responses, average_responses, total_taxels_3D_position, total_taxels_2D_position, bb_centroid, bb_normal, total_taxel_normals = get_taxel_data(bb_number, S,T, taxel_predictions, taxel_predictions_info, pixel_positions, number_of_ids)
 
+        total_forces_vector = find_vector_forces (total_taxel_responses,bb_normal )
         #print("Taxel Predictions:", taxel_predictions) #here I have all the taxel indexes of my predictions, however i need to clean them 
         #print("Taxel Predictions Info:", taxel_predictions_info) #here I have all the taxel indexes of my predictions, however i need to clean them 
         #print("Taxel Responses:", total_taxel_responses) 

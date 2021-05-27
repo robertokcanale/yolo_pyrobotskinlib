@@ -177,7 +177,7 @@ def get_taxel_data(bb_number, S, T, taxel_predictions, taxel_predictions_info, p
         average_normal = [0.0,0.0,0.0]
         if len(total_taxel_normals[n]) != 0:
             for i in range(len(total_taxel_normals[n])):
-                average_normal[0] = average_normal[0] - total_taxel_normals[n][i][0]
+                average_normal[0] = average_normal[0] - total_taxel_normals[n][i][0] #on the x, it is going to be 0 of course
                 average_normal[1] = average_normal[1] - total_taxel_normals[n][i][1]
                 average_normal[2] = average_normal[2] - total_taxel_normals[n][i][2]
             average_normal[0] = average_normal[0] / len(total_taxel_normals[n])
@@ -264,16 +264,20 @@ def total_responses_visualization(bb_number, V, pixel_positions, taxel_predictio
                 if a == 4:
                     V.add_marker(counter,pixel_positions[n][i], contact_color)
                 counter += 1
+def find_vector_forces(total_taxel_responses, bb_normal):
+    total_vector_forces = np.empty((len(total_taxel_responses),), dtype = object)
+    for i in len(total_taxel_responses):
 
+
+    return total_vector_forces
 
 def average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions_info, color_dict ):
-    if bb_number != 0:
         counter = 0
         for n in range(bb_number):
-            contact_color = color_dict[taxel_predictions_info[n][0]]
-            V.add_marker(counter,bb_centroid[n], contact_color)
-            counter += 1
-
+            if bb_centroid[n] != []:
+                contact_color = color_dict[taxel_predictions_info[n][0]]
+                V.add_marker(counter,bb_centroid[n], contact_color)
+                counter += 1
 
 def open_files():
     palm_file = open(("../data_files/palm.txt"),"w+") 
