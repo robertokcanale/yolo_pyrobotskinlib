@@ -29,7 +29,7 @@ if __name__ == '__main__':
     V.render_object(S,"Robot")
     V2.render_object(S,"Robot_Markers")
     #BUILD IMAGE
-    TIB = rsl.TactileImageBuilder(T)
+    TIB = rsl.TactileImageBuilder(T, 400, 400)
     TIB.build_tactile_image()
     u.start_robot_skin_updater()
     rows = TIB.get_rows() #y
@@ -107,7 +107,7 @@ if __name__ == '__main__':
         #ACTIVATED TAXELS FOR EACH BB
         taxel_predictions, pixel_positions, taxel_predictions_info = bb_active_taxel(bb_number, T, bb_predictions_reshaped, TIB, skin_faces)
         #GET RESPONSE OF ACTIVATED TAXELS
-        total_taxel_responses, average_responses, total_taxels_3D_position,total_taxels_2D_position, bb_centroid, bb_normal, total_taxel_normals = get_taxel_data(bb_number, S,T, taxel_predictions, taxel_predictions_info, pixel_positions, number_of_ids)
+        total_taxel_responses, average_responses, total_taxels_3D_position, total_taxels_2D_position, bb_centroid, bb_normal, total_taxel_normals = get_taxel_data(bb_number, S,T, taxel_predictions, taxel_predictions_info, pixel_positions, number_of_ids)
 
         #print("Taxel Predictions:", taxel_predictions) #here I have all the taxel indexes of my predictions, however i need to clean them 
         #print("Taxel Predictions Info:", taxel_predictions_info) #here I have all the taxel indexes of my predictions, however i need to clean them 
@@ -124,5 +124,5 @@ if __name__ == '__main__':
         cv2.imshow('Tactile Image  Original',I_backtorgb)
         cv2.waitKey(1)
 
-        time.sleep(0.1)
-        #V.remove_markers()
+        time.sleep(1)
+        V.remove_markers()

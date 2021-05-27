@@ -152,24 +152,7 @@ def get_taxel_data(bb_number, S, T, taxel_predictions, taxel_predictions_info, p
             print("Average Response of", taxel_predictions_info[n][0], "is", average_responses[n])
         else:
             average_responses[n] = 0.0
-    
-    #AVERAGE POSITION 3D
-    for n in range(bb_number):
-        average_position = [0.0,0.0,0.0]
-        if len(pixel_positions[n]) != 0:
-            for i in range(len(pixel_positions[n])):
-                average_position[0] = average_position[0] + pixel_positions[n][i][0]
-                average_position[1] = average_position[1] + pixel_positions[n][i][1]
-                average_position[2] = average_position[2] + pixel_positions[n][i][2]
-            average_position[0] = average_position[0] /len(pixel_positions[n])
-            average_position[1] = average_position[1] /len(pixel_positions[n])
-            average_position[2] = average_position[2] /len(pixel_positions[n])
 
-            bb_centroid[n] = average_position
-            #print("Position of Centroid", taxel_predictions_info[n][0], "is", bb_centroid[n])
-        else:
-            bb_centroid[n] = []
-    print("Old:", bb_centroid)
     #AVERAGE POSITION 2D AND 3D CENTROID
     for n in range(bb_number):
         average_position = [0.0,0.0,0.0]
@@ -178,17 +161,16 @@ def get_taxel_data(bb_number, S, T, taxel_predictions, taxel_predictions_info, p
                 average_position[0] = average_position[0] + total_taxels_2D_position[n][i][0]
                 average_position[1] = average_position[1] + total_taxels_2D_position[n][i][1]
                 average_position[2] = average_position[2] + total_taxels_2D_position[n][i][2] #z should be 0 anyway
-            average_position[0] = average_position[0] /len(total_taxels_2D_position[n])
-            average_position[1] = average_position[1] /len(total_taxels_2D_position[n])
-            average_position[2] = average_position[2] /len(total_taxels_2D_position[n])
+            average_position[0] = average_position[0] / len(total_taxels_2D_position[n])
+            average_position[1] = average_position[1] / len(total_taxels_2D_position[n])
+            average_position[2] = average_position[2] / len(total_taxels_2D_position[n])
 
             bb_centroid2d[n]=average_position
-            bb_centroid[n] = back_project_centroid(S, T, bb_centroid2d[n], number_of_ids)
+            #used for projecting a 2D centroid on the tactile map to a 3D point
+            bb_centroid[n] = back_project_centroid(S, T, bb_centroid2d[n], number_of_ids) 
         else:
             bb_centroid2d[n] = []
-
-    print("NEW:", bb_centroid)
-    
+            bb_centroid[n] = []    
 
     #AVERAGE NORMAL
     for n in range(bb_number):
@@ -209,7 +191,7 @@ def get_taxel_data(bb_number, S, T, taxel_predictions, taxel_predictions_info, p
 
 
     
-    return total_taxel_responses, average_responses, total_taxels_3D_position,total_taxels_2D_position, bb_centroid, bb_normal, total_taxel_normals
+    return total_taxel_responses, average_responses, total_taxels_3D_position, total_taxels_2D_position, bb_centroid, bb_normal, total_taxel_normals
 
 #S is skin, T is tactile map
 def back_project_centroid(S, T, bb_centroid2d, number_of_ids):
@@ -272,10 +254,6 @@ def back_project_centroid(S, T, bb_centroid2d, number_of_ids):
 
     return centroid_3d
 
-
-
-
-
 def total_responses_visualization(bb_number, V, pixel_positions, taxel_predictions_info, color_dict):
     if bb_number !=0:
         counter = 0
@@ -289,10 +267,13 @@ def total_responses_visualization(bb_number, V, pixel_positions, taxel_predictio
 
 
 def average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions_info, color_dict ):
-    if bb_number !=0:
+    if bb_number != 0:
+        counter = 0
         for n in range(bb_number):
             contact_color = color_dict[taxel_predictions_info[n][0]]
-            V.add_marker((n*30+2*n),bb_centroid[n], contact_color)
+            V.add_marker(counter,bb_centroid[n], contact_color)
+            counter += 1
+
 
 def open_files():
     palm_file = open(("../data_files/palm.txt"),"w+") 
