@@ -56,8 +56,9 @@ if __name__ == '__main__':
     model = attempt_load(weights, map_location=device)
     # Get names and colors
     names = model.module.names if hasattr(model, 'module') else model.names
-    palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file = open_files("average_responses")
-    palm_file_f,thumb_file_f,index_file_f, middle_file_f, ring_file_f, pinkie_file_f = open_files("integral_forces")
+    #palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file = open_files("average_responses")
+    #palm_file_f,thumb_file_f,index_file_f, middle_file_f, ring_file_f, pinkie_file_f = open_files("integral_forces")
+    palm_file_m,thumb_file_m,index_file_m, middle_file_m, ring_file_m, pinkie_file_m = open_files("integral_moments")
 
     while True:
         #GET NEW DATA
@@ -103,11 +104,11 @@ if __name__ == '__main__':
         taxel_predictions, pixel_positions, taxel_predictions_info = bb_active_taxel(bb_number, T, bb_predictions_reshaped, TIB, skin_faces)
         #GET RESPONSE OF ACTIVATED TAXELS
         total_taxel_responses, total_taxels_3D_position, total_taxel_normals, total_taxels_2D_position = get_total_data(bb_number, S, T, taxel_predictions)
-        average_responses =get_average_response_per_BB(bb_number, total_taxel_responses, taxel_predictions_info)
-        bb_normal = get_bb_average_normals(bb_number,total_taxel_normals )
+        #average_responses =get_average_response_per_BB(bb_number, total_taxel_responses, taxel_predictions_info)
+        #bb_normal = get_bb_average_normals(bb_number,total_taxel_normals )
         bb_centroid2d, bb_centroid3d = get_bb_centroids(bb_number,S,T, total_taxels_2D_position, number_of_ids)
-        bb_taxels_r = get_distance_from_center(bb_number, total_taxels_3D_position, total_taxel_responses)
-        bb_taxels_r_axis = get_distance_from_axis(bb_number, total_taxels_3D_position, total_taxel_responses)
+        #bb_taxels_r = get_distance_from_center(bb_number, total_taxels_3D_position, total_taxel_responses)
+        #bb_taxels_r_axis = get_distance_from_axis(bb_number, total_taxels_3D_position, total_taxel_responses)
         total_bb_forces = find_total_bb_forces(bb_number, total_taxel_responses, total_taxel_normals)
         bb_integral_force = get_bb_integral_force(bb_number, total_bb_forces)
         bb_integral_moment = get_bb_moment(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position)
@@ -127,9 +128,10 @@ if __name__ == '__main__':
             print("Moment per BB", bb_integral_moment)
 
         """
-        write_responses(bb_number, taxel_predictions_info, average_responses, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file)
-        write_forces(bb_number, taxel_predictions_info, bb_integral_force, palm_file_f,thumb_file_f,index_file_f, middle_file_f, ring_file_f, pinkie_file_f)
-    
+        #write_responses(bb_number, taxel_predictions_info, average_responses, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file)
+        #write_forces(bb_number, taxel_predictions_info, bb_integral_force, palm_file_f,thumb_file_f,index_file_f, middle_file_f, ring_file_f, pinkie_file_f)
+        write_moments(bb_number, taxel_predictions_info, bb_integral_moment, palm_file_m,thumb_file_m,index_file_m, middle_file_m, ring_file_m, pinkie_file_m)
+
         im_to_show = cv2.resize(I_resized, (500, 500), interpolation = cv2.INTER_AREA)
         cv2.imshow('Tactile Image',im_to_show)
         cv2.waitKey(1)

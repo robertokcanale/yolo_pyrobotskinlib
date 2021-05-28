@@ -1,4 +1,4 @@
-id = '_integral_forces';
+id = '_integral_moments';
 palm = readtable(strcat('data_files/palm', id, '.txt'));
 thumb = readtable(strcat('data_files/thumb', id, '.txt'));
 index = readtable(strcat('data_files/index', id, '.txt'));
@@ -7,7 +7,9 @@ ring = readtable(strcat('data_files/ring', id, '.txt'));
 pinkie = readtable(strcat('data_files/pinkie', id, '.txt'));
 set(0,'DefaultTextFontname', 'CMU Serif')
 x = 1:length(palm.Var1);
-subplot(3,1,1)
+
+% Tile 1
+subplot(1,3,1)
 plot(x,palm.Var2);
 hold on
 
@@ -25,14 +27,15 @@ hold on
 
 plot(x,pinkie.Var2)
 hold on
+axis on
 
 xlabel('Time ms','FontSize',20,'Interpreter', 'latex') 
-ylabel('Average Response','FontSize',20,'Interpreter', 'latex') 
+ylabel('Intensity','FontSize',20,'Interpreter', 'latex') 
+title('X','FontSize',20,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
+% Tile 2
+subplot(1,3,2)
 
-
-
-subplot(3,1,2)
 plot(x,palm.Var3);
 hold on
 
@@ -50,9 +53,15 @@ hold on
 
 plot(x,pinkie.Var3)
 hold on
+axis on
 
+xlabel('Time ms','FontSize',20,'Interpreter', 'latex') 
+ylabel('Intensity','FontSize',20,'Interpreter', 'latex') 
+title('Y','FontSize',20,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
-subplot(3,1,3)
+% Tile 3
+subplot(1,3,3)
+
 plot(x,palm.Var4);
 hold on
 
@@ -70,9 +79,18 @@ hold on
 
 plot(x,pinkie.Var4)
 hold on
+axis on
+
+xlabel('Time ms','FontSize',20,'Interpreter', 'latex') 
+ylabel('Intensity','FontSize',20,'Interpreter', 'latex') 
+title('Z','FontSize',20,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
+
+sgtitle('Finger Moments Integral','FontSize',30,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
 
-
-legend({'palm','thumb', 'index', 'middle', 'ring', 'pinkie'}, 'FontSize',15,'Interpreter', 'latex')
-title('Hand Response','FontSize',30,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-
+% Construct a Legend with the data from the sub-plots
+hL = legend({'palm','thumb', 'index', 'middle', 'ring', 'pinkie'}, 'FontSize',15,'Interpreter', 'latex');
+% Programatically move the Legend
+newPosition = [0.75 0.75 0.3 0.3];
+newUnits = 'normalized';
+set(hL,'Position', newPosition,'Units', newUnits);

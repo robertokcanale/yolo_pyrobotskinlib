@@ -37,12 +37,12 @@ def average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions
                 counter += 1
 
 def open_files(name):
-    palm_file = open(("../data_files/palm_" + name + ".txt"),"w") 
-    thumb_file = open(("../data_files/thumb_" + name + ".txt"),"w") 
-    index_file = open(("../data_files/index_" + name + ".txt"),"w") 
-    middle_file = open(("../data_files/middle_" + name + ".txt"),"w") 
-    ring_file = open(("../data_files/ring_" + name + ".txt"),"w") 
-    pinkie_file = open(("../data_files/pinkie_" + name + ".txt"),"w") 
+    palm_file = open(("../data_files/palm_" + name + ".txt"),"w+") 
+    thumb_file = open(("../data_files/thumb_" + name + ".txt"),"w+") 
+    index_file = open(("../data_files/index_" + name + ".txt"),"w+") 
+    middle_file = open(("../data_files/middle_" + name + ".txt"),"w+") 
+    ring_file = open(("../data_files/ring_" + name + ".txt"),"w+") 
+    pinkie_file = open(("../data_files/pinkie_" + name + ".txt"),"w+") 
     
     return palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file
 
@@ -108,7 +108,36 @@ def write_forces(bb_number, taxel_predictions_info, bb_integral_force, palm_file
     return
 
 def write_moments(bb_number, taxel_predictions_info, bb_integral_moment, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file):
+    s_palm = str(round(time.time(),5)) + " " + str(0.0) + " " + str(0.0) + " " + str(0.0) + "\n"
+    s_thumb = str(round(time.time(),5)) + " " + str(0.0) + " " + str(0.0) + " " + str(0.0) + "\n"
+    s_index = str(round(time.time(),5)) + " " + str(0.0) + " " + str(0.0) + " " + str(0.0) + "\n"
+    s_middle = str(round(time.time(),5)) + " " + str(0.0) + " " + str(0.0) + " " + str(0.0) + "\n"
+    s_ring = str(round(time.time(),5)) + " " + str(0.0) + " " + str(0.0) + " " + str(0.0) + "\n"
+    s_pinkie = str(round(time.time(),5)) + " " + str(0.0) + " " + str(0.0)+ " " + str(0.0) + "\n"
     
+    #initialize strings to write
+    for n in range(bb_number):
+        if taxel_predictions_info[n][0] == "palm":
+            s_palm = str(round(time.time(),5)) + " " + str(bb_integral_moment[n][0]) + " " + str(bb_integral_moment[n][1])+ " " + str(bb_integral_moment[n][2])+ "\n"
+        if taxel_predictions_info[n][0] == "thumb":
+            s_thumb = str(round(time.time(),5)) + " " + str(bb_integral_moment[n][0]) + " " + str(bb_integral_moment[n][1])+ " " + str(bb_integral_moment[n][2])+ "\n"
+        if taxel_predictions_info[n][0] == "index":
+            s_index = str(round(time.time(),5)) + " " + str(bb_integral_moment[n][0]) + " " + str(bb_integral_moment[n][1])+ " " + str(bb_integral_moment[n][2])+ "\n"
+        if taxel_predictions_info[n][0] == "middle":
+            s_middle = str(round(time.time(),5)) + " " + str(bb_integral_moment[n][0]) + " " + str(bb_integral_moment[n][1])+ " " + str(bb_integral_moment[n][2])+ "\n"
+        if taxel_predictions_info[n][0] == "ring":
+            s_ring = str(round(time.time(),5)) + " " + str(bb_integral_moment[n][0]) + " " + str(bb_integral_moment[n][1])+ " " + str(bb_integral_moment[n][2])+ "\n"
+        if taxel_predictions_info[n][0] == "pinkie":
+            s_pinkie = str(round(time.time(),5)) + " " + str(bb_integral_moment[n][0]) + " " + str(bb_integral_moment[n][1])+ " " + str(bb_integral_moment[n][2])+ "\n"
+    
+    palm_file.write(s_palm)
+    thumb_file.write(s_thumb)
+    index_file.write(s_index)
+    middle_file.write(s_middle)
+    ring_file.write(s_ring)
+    pinkie_file.write(s_pinkie)    
+    
+    return
 
     return
 
