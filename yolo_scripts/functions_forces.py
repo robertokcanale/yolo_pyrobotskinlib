@@ -46,7 +46,6 @@ def get_distance_from_center(bb_number, total_taxel_positions, total_taxel_respo
         bb_taxels_r[n] = r
     return bb_taxels_r
 
-
 def get_distance_from_axis(bb_number, total_taxel_positions, total_taxel_responses):
     bb_taxels_r_axis = np.empty((bb_number,), dtype = object)
     for n in range(bb_number):
@@ -57,3 +56,34 @@ def get_distance_from_axis(bb_number, total_taxel_positions, total_taxel_respons
         bb_taxels_r_axis[n] = r_axis
     return bb_taxels_r_axis
 
+def get_bb_integral_force(bb_number, total_bb_forces):  
+    bb_integral_force = []
+    for n in range(bb_number):
+        integral_force = [0.0,0.0,0.0]
+        if len(total_bb_forces[n]) != 0:
+            for i in range(len(total_bb_forces[n])):
+                integral_force[0] = integral_force[0] + total_bb_forces[n][i][0]
+                integral_force[1] = integral_force[1] + total_bb_forces[n][i][1]
+                integral_force[2] = integral_force[2] + total_bb_forces[n][i][2]
+            #HERE STUFF MIGHT BE DIFFERENT AND WE MIGHT CONSIDER SOME AREA
+            #STILL TO MODIFY/EVALUATE, for now it is simply divided by the total number of forces
+            integral_force[0] = integral_force[0] / len(total_bb_forces[n])
+            integral_force[1] = integral_force[1] / len(total_bb_forces[n])
+            integral_force[2] = integral_force[2] / len(total_bb_forces[n])
+        bb_integral_force.append(integral_force)
+    return bb_integral_force   
+
+
+def get_bb_moment(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position):
+    bb_integral_moment = []
+    for n in range(bb_number):
+        moment =  [0.0,0.0,0.0]
+        moment_sum =  [0.0,0.0,0.0]
+        if len(total_bb_forces[n]) != 0:
+            for i in range(len(total_bb_forces[n])):
+                distance = np.subtract(total_taxels_3D_position[n][i], bb_centroid3d[n])
+                moment = np.cross(distance, total_bb_forces[n][i])
+                moment_sum = np.add(moment_sum, moment)
+        bb_integral_moment.append(moment_sum)
+    return bb_integral_moment 
+        

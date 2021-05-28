@@ -1,9 +1,10 @@
-palm = readtable('data_files/palm.txt');
-thumb = readtable('data_files/thumb.txt');
-index = readtable('data_files/index.txt');
-middle = readtable('data_files/middle.txt');
-ring = readtable('data_files/ring.txt');
-pinkie = readtable('data_files/pinkie.txt');
+id = '_integral_forces';
+palm = readtable(strcat('data_files/palm', id, '.txt'));
+thumb = readtable(strcat('data_files/thumb', id, '.txt'));
+index = readtable(strcat('data_files/index', id, '.txt'));
+middle = readtable(strcat('data_files/middle', id, '.txt'));
+ring = readtable(strcat('data_files/ring', id, '.txt'));
+pinkie = readtable(strcat('data_files/pinkie', id, '.txt'));
 set(0,'DefaultTextFontname', 'CMU Serif')
 x = 1:length(palm.Var1);
 

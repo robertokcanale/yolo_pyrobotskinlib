@@ -120,7 +120,9 @@ if __name__ == '__main__':
         bb_taxels_r = get_distance_from_center(bb_number, total_taxels_3D_position, total_taxel_responses)
         bb_taxels_r_axis = get_distance_from_axis(bb_number, total_taxels_3D_position, total_taxel_responses)
         bb_integral_force = get_bb_integral_force(bb_number, total_bb_forces)
-        """if bb_number !=0:
+        bb_moment = get_bb_moment(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position)
+        
+        """ if bb_number !=0:
             print("Taxel Predictions:", np.shape(taxel_predictions)) #here I have all the taxel indexes of my predictions, however i need to clean them 
             print("Taxel Predictions Info:", np.shape(taxel_predictions_info[1])) #here I have all the taxel indexes of my predictions, however i need to clean them 
             print("Taxel Responses:", np.shape(total_taxel_responses[1])) 
@@ -130,8 +132,11 @@ if __name__ == '__main__':
             print("Total_BB_forces:", np.shape(total_bb_forces[1]))
             print("BB distances from center:", np.shape(bb_taxels_r[1]))
             print("BB distances from axis:", np.shape(bb_taxels_r_axis[1]))
+            print("Taxel Responses:", np.shape(total_taxel_responses[0]))
+            print("Integral force per BB", bb_integral_force)
+            print("Moment per BB", bb_moment)
+
         """
-        print("Integral force per BB", bb_integral_force)
 
 
         #VISUALIZE MARKERS
