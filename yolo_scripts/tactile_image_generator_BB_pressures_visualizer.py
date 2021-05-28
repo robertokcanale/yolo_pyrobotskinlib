@@ -7,6 +7,11 @@ import cv2
 import time
 from PIL import Image
 from functions import *
+from functions_taxel_data import *
+from functions_bb import *
+from functions_forces import *
+
+
 from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
 from utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
@@ -107,20 +112,31 @@ if __name__ == '__main__':
         #ACTIVATED TAXELS FOR EACH BB
         taxel_predictions, pixel_positions, taxel_predictions_info = bb_active_taxel(bb_number, T, bb_predictions_reshaped, TIB, skin_faces)
         #GET RESPONSE OF ACTIVATED TAXELS
-        total_taxel_responses, average_responses, total_taxels_3D_position, total_taxels_2D_position, bb_centroid, bb_normal, total_taxel_normals = get_taxel_data(bb_number, S,T, taxel_predictions, taxel_predictions_info, pixel_positions, number_of_ids)
+        total_taxel_responses, total_taxels_3D_position, total_taxel_normals, total_taxels_2D_position = get_total_data(bb_number, S, T, taxel_predictions)
+        average_responses =get_average_response_per_BB(bb_number, total_taxel_responses, taxel_predictions_info)
+        bb_normal = get_bb_average_normals(bb_number,total_taxel_normals )
+        bb_centroid2d, bb_centroid3d = get_bb_centroids(bb_number,S,T, total_taxels_2D_position, number_of_ids)
+        total_bb_forces = find_total_bb_forces(bb_number, total_taxel_responses, total_taxel_normals)
+        bb_taxels_r = get_distance_from_center(bb_number, total_taxels_3D_position, total_taxel_responses)
+        bb_taxels_r_axis = get_distance_from_axis(bb_number, total_taxels_3D_position, total_taxel_responses)
+        bb_integral_force = get_bb_integral_force(bb_number, total_bb_forces)
+        """if bb_number !=0:
+            print("Taxel Predictions:", np.shape(taxel_predictions)) #here I have all the taxel indexes of my predictions, however i need to clean them 
+            print("Taxel Predictions Info:", np.shape(taxel_predictions_info[1])) #here I have all the taxel indexes of my predictions, however i need to clean them 
+            print("Taxel Responses:", np.shape(total_taxel_responses[1])) 
+            print("Taxel Positions:", np.shape(total_taxels_3D_position[1]))
+            print("Average Taxel Responses:", np.shape(average_responses))
+            print("Average Taxel Positions:", np.shape(bb_centroid3d[1]))
+            print("Total_BB_forces:", np.shape(total_bb_forces[1]))
+            print("BB distances from center:", np.shape(bb_taxels_r[1]))
+            print("BB distances from axis:", np.shape(bb_taxels_r_axis[1]))
+        """
+        print("Integral force per BB", bb_integral_force)
 
-        total_forces_vector = find_vector_forces (total_taxel_responses,bb_normal )
-        #print("Taxel Predictions:", taxel_predictions) #here I have all the taxel indexes of my predictions, however i need to clean them 
-        #print("Taxel Predictions Info:", taxel_predictions_info) #here I have all the taxel indexes of my predictions, however i need to clean them 
-        #print("Taxel Responses:", total_taxel_responses) 
-        #print("Taxel Positions:", total_taxels_position)
-        #print("Average Taxel Responses:", average_responses) 
-        #print("Average Taxel Positions:", bb_centroid)
-        
+
         #VISUALIZE MARKERS
         #total_responses_visualization(bb_number, V, pixel_positions, taxel_predictions_info, color_dict )
-        #total_faces_visualization(bb_number, V, face_centers, taxel_predictions_info, color_dict)
-        average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions_info, color_dict )
+        #average_responses_visualization(bb_number, V, bb_centroid3d, taxel_predictions_info, color_dict )
 
         cv2.imshow('Tactile Image  Original',I_backtorgb)
         cv2.waitKey(1)
