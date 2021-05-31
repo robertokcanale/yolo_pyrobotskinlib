@@ -2,15 +2,14 @@ import numpy as np
 from math import sqrt, pow
 #Get list of active taxels per bounding box on the image, create an array of the taxel center
 def bb_active_taxel (bb_number, T, bb_predictions_reshaped, TIB, skin_faces):
-    taxel_predictions = np.empty((bb_number,), dtype = object)
-    pixel_positions = np.empty((bb_number,), dtype = object)
-    taxel_predictions_info = np.empty((bb_number,), dtype = object)
+    taxel_predictions, pixel_positions,taxel_predictions_info = np.empty((bb_number,), dtype = object), np.empty((bb_number,), dtype = object), np.empty((bb_number,), dtype = object)
     for n in range(bb_number):
-        faces_predictions = []
-        pixel_position = []
-        info = []
-        for i in range(bb_predictions_reshaped[n].coordinates_reshaped[0], bb_predictions_reshaped[n].coordinates_reshaped[2]):
-            for j in range(bb_predictions_reshaped[n].coordinates_reshaped[1], bb_predictions_reshaped[n].coordinates_reshaped[3]):
+        faces_predictions, pixel_position, info = [], [], []
+        cols = range(bb_predictions_reshaped[n].coordinates_reshaped[0], bb_predictions_reshaped[n].coordinates_reshaped[2])
+        rows = range(bb_predictions_reshaped[n].coordinates_reshaped[1], bb_predictions_reshaped[n].coordinates_reshaped[3])
+
+        for i in cols:
+            for j in rows:
                 face_index = TIB.get_pixel_face_index( i,  j)
                 if face_index == (-1) or face_index >= 1218: #checking that taxels are withing boundss
                     break
@@ -26,7 +25,6 @@ def bb_active_taxel (bb_number, T, bb_predictions_reshaped, TIB, skin_faces):
 
             taxel_predictions[n] = set(faces_predictions) #set rmoves duplicates
             pixel_positions[n] = pixel_position
-
         #Prediction info
         info.append(bb_predictions_reshaped[n].label)
         info.append(bb_predictions_reshaped[n].confidence)
@@ -51,39 +49,36 @@ def get_average_response_per_BB(bb_number, total_taxel_responses, taxel_predicti
 
 #2D AND 3D CENTROID OF BB
 def get_bb_centroids(bb_number,S,T, total_taxels_2D_position, number_of_ids):
-    bb_centroid2d = np.empty((bb_number,), dtype = object)
-    bb_centroid3d= np.empty((bb_number,), dtype = object)
+    bb_centroid2d, bb_centroid3d = np.empty((bb_number,), dtype = object), np.empty((bb_number,), dtype = object)
     for n in range(bb_number):
         average_position = [0.0,0.0,0.0]
         if len(total_taxels_2D_position[n]) != 0:
-            for i in range(len(total_taxels_2D_position[n])):
-                average_position[0] = average_position[0] + total_taxels_2D_position[n][i][0]
-                average_position[1] = average_position[1] + total_taxels_2D_position[n][i][1]
-                average_position[2] = average_position[2] + total_taxels_2D_position[n][i][2] #z should be 0 anyway
+            for i,val in enumerate(total_taxels_2D_position[n]):
+                average_position[0] = average_position[0] + val[0]
+                average_position[1] = average_position[1] + val[1]
+                average_position[2] = average_position[2] + val[2] #z should be 0 anyway
             average_position[0] = average_position[0] / len(total_taxels_2D_position[n])
             average_position[1] = average_position[1] / len(total_taxels_2D_position[n])
             average_position[2] = average_position[2] / len(total_taxels_2D_position[n])
-
             bb_centroid2d[n]=average_position
             #used for projecting a 2D centroid on the tactile map to a 3D point
             bb_centroid3d[n] = back_project_centroid(S, T, bb_centroid2d[n], number_of_ids) 
         else:
             bb_centroid2d[n] = []
-            bb_centroid3d[n] = []    
-
+            bb_centroid3d[n] = []  
     return bb_centroid2d, bb_centroid3d
 
-#BB NORMALS
+#BB NORMALS, i put the minus here
 def get_bb_average_normals(bb_number,total_taxel_normals):
     bb_normal = np.empty((bb_number,), dtype = object)
     #AVERAGE NORMAL
-    """for n in range(bb_number):
+    for n in range(bb_number):
         average_normal = [0.0,0.0,0.0]
         if len(total_taxel_normals[n]) != 0:
-            for i in range(len(total_taxel_normals[n])):
-                average_normal[0] = average_normal[0] - total_taxel_normals[n][i][0] #on the x, it is going to be 0 of course
-                average_normal[1] = average_normal[1] - total_taxel_normals[n][i][1]
-                average_normal[2] = average_normal[2] - total_taxel_normals[n][i][2]
+            for i, val in enumerate(total_taxel_normals[n]):
+                average_normal[0] = average_normal[0] - val[0] #on the x, it is going to be 0 of course
+                average_normal[1] = average_normal[1] - val[1]
+                average_normal[2] = average_normal[2] - val[2]
             average_normal[0] = average_normal[0] / len(total_taxel_normals[n])
             average_normal[1] = average_normal[1] / len(total_taxel_normals[n])
             average_normal[2] = average_normal[2] / len(total_taxel_normals[n])
@@ -91,35 +86,20 @@ def get_bb_average_normals(bb_number,total_taxel_normals):
             bb_normal[n] = average_normal
             #print("Position of Centroid", taxel_predictions_info[n][0], "is", bb_centroid[n])
         else:
-            bb_normal[n] = []  """
-    average_normal = np.zeros((3,), dtype=np.float32)
-    for n in range(bb_number):
-        average_normal = [(-np.add(average_normal,total_taxel_normals[n][i])/len(total_taxel_normals[n])) for i in range(len(total_taxel_normals[n]))]
-        bb_normal[n] = average_normal
-
+            bb_normal[n] = []  
     return bb_normal
 
 #BACK PROJECT A POINT FROM 2D MAP TO 3D
 def back_project_centroid(S, T, bb_centroid2d, number_of_ids):
     #initializing
-    short_dist1 = 10
-    short_dist2 = 10
-    short_dist3 = 10
-    taxel_id1 = 0
-    taxel_id2 = 0
-    taxel_id3 = 0
-    centroid_3d = [0.0,0.0,0.0]
-    P = [0.0,0.0,0.0]
-    B = [0.0,0.0,0.0]
-    C = [0.0,0.0,0.0]
+    short_dist1, short_dist2, short_dist3, taxel_id1, taxel_id2, taxel_id3  = 10, 10, 10, 0, 0, 0
+    centroid_3d, P, B, C = [0.0,0.0,0.0], [0.0,0.0,0.0], [0.0,0.0,0.0], [0.0,0.0,0.0]
 
     #find the 3 closest taxels
     for i in range(number_of_ids):
         taxel_coords = T.taxels[i].get_taxel_position()
-        x = taxel_coords[0]
-        y = taxel_coords[1]
+        x, y = taxel_coords[0], taxel_coords[1]
         distance = sqrt( pow(bb_centroid2d[0] - x,2) + pow(bb_centroid2d[1] -y, 2))
-
         if distance < short_dist1:
             short_dist3 = short_dist2
             short_dist2 = short_dist1
@@ -136,26 +116,21 @@ def back_project_centroid(S, T, bb_centroid2d, number_of_ids):
             short_dist3 = distance
             taxel_id3 = i
 
-    a = T.taxels[taxel_id1].get_taxel_position()
-    b = T.taxels[taxel_id2].get_taxel_position()
-    c = T.taxels[taxel_id3].get_taxel_position()
+    a,  b, c = T.taxels[taxel_id1].get_taxel_position(), T.taxels[taxel_id2].get_taxel_position(), T.taxels[taxel_id3].get_taxel_position()
 
     #Compute the cofficents of the convex combination
-    P[0] = bb_centroid2d[0]-a[0]; P[1] = bb_centroid2d[1]-a[1];
-    B[0] = b[0]-a[0]; B[1] = b[1]-a[1];
-    C[0] = c[0]-a[0]; C[1] = c[1]-a[1];
+    P[0], P[1] = bb_centroid2d[0]-a[0], bb_centroid2d[1]-a[1]
+    B[0], B[1] = b[0]-a[0], b[1]-a[1]
+    C[0], C[1] = c[0]-a[0], c[1]-a[1]
         
     d = B[0]*C[1] - C[0]*B[1];
-    wa = ( P[0]*(B[1]-C[1]) + P[1]*(C[0]-B[0]) + B[0]*C[1] - C[0]*B[1] ) / d;
-    wb = ( P[0]*C[1] - P[1]*C[0] ) / d;
-    wc = ( P[1]*B[0] - P[0]*B[1] ) / d;
+    wa = (P[0]*(B[1]-C[1]) + P[1]*(C[0]-B[0]) + B[0]*C[1] - C[0]*B[1]) / d
+    wb = (P[0]*C[1] - P[1]*C[0]) / d
+    wc = (P[1]*B[0] - P[0]*B[1]) / d
 
-    v1 = S.taxels[taxel_id1].get_taxel_position()
-    v2 = S.taxels[taxel_id2].get_taxel_position()
-    v3 = S.taxels[taxel_id3].get_taxel_position()
+    v1, v2, v3 = S.taxels[taxel_id1].get_taxel_position(), S.taxels[taxel_id2].get_taxel_position(), S.taxels[taxel_id3].get_taxel_position()
 
-    centroid_3d[0] = wa*v1[0] + wb*v2[0] + wc*v3[0];
-    centroid_3d[1] = wa*v1[1] + wb*v2[1] + wc*v3[1];
-    centroid_3d[2] = wa*v1[2] + wb*v2[2] + wc*v3[2]
+    centroid_3d[0], centroid_3d[1], centroid_3d[2] = wa*v1[0] + wb*v2[0] + wc*v3[0], wa*v1[1] + wb*v2[1] + wc*v3[1], wa*v1[2] + wb*v2[2] + wc*v3[2]
+
 
     return centroid_3d

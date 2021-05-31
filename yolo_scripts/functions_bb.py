@@ -32,10 +32,8 @@ class BoundingBoxReshaped:
 #Reshape bb coordinates for images of different size
 def reshape_coordinates_bb (coord_in, width_i, height_i, width_o, height_o):
     coord_out = np.zeros(len(coord_in), dtype= np.int32)
-    coord_out[0] = (coord_in[0]*width_o/width_i) #x1
-    coord_out[1] = (coord_in[1]*height_o/height_i)   #y1
-    coord_out[2] = (coord_in[2]*width_o/width_i)  #x2
-    coord_out[3] = (coord_in[3]*height_o/height_i) #y2
+    #x1y1, x2y2
+    coord_out[0], coord_out[1], coord_out[2], coord_out[3] = (coord_in[0]*width_o/width_i) ,(coord_in[1]*height_o/height_i), (coord_in[2]*width_o/width_i), (coord_in[3]*height_o/height_i) 
     return coord_out
 
 #Create a Bounding Box object with the predictions
@@ -43,9 +41,8 @@ def bounding_box_predictions(det, bb_number, names):
     bb_predictions = [BoundingBox() for i in range(bb_number)]
     for i in range(bb_number): #scan the prediction matrix DET/PRED (they are the same)
         coordinates=[round(det[i][0].item(),3),round(det[i][1].item(),3),round(det[i][2].item(),3),round(det[i][3].item(),3)] 
-        confidence = round(det[i][4].item(),5)
-        obj_class_id = int(det[i][5].item())
-        obj_class = names[int(det[i][5].item())]
+        confidence, obj_class_id, obj_class = round(det[i][4].item(),5), int(det[i][5].item()) ,names[int(det[i][5].item())]
+
         bb_predictions[i].set_bb(obj_class_id, obj_class, confidence, coordinates)
     return bb_predictions
 

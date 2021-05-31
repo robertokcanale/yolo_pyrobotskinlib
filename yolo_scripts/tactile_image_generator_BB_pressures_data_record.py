@@ -2,7 +2,7 @@ import pyrobotskinlib as rsl
 import numpy as np
 import argparse
 import torch
-import cv2
+from cv2 import cvtColor, resize, imshow, waitKey, INTER_AREA, COLOR_GRAY2RGB
 from time import sleep
 from functions import *
 from functions_bb import *
@@ -67,8 +67,8 @@ if __name__ == '__main__':
         #CREATE TACTILE IMAGE AND PROCESS IMAGE (for recorded data)
         I = np.array(TIB.get_tactile_image(),np.uint8) #get the image 
         I = I.reshape([rows,cols]) #reshape it into a 2d array
-        I_backtorgb = cv2.cvtColor(I,cv2.COLOR_GRAY2RGB)  #converting from grayscale to rgb 
-        I_resized = cv2.resize(I_backtorgb, (416,416), interpolation=cv2.INTER_AREA) #resize it for yolo
+        I_backtorgb = cvtColor(I,COLOR_GRAY2RGB)  #converting from grayscale to rgb 
+        I_resized = resize(I_backtorgb, (416,416), interpolation=INTER_AREA) #resize it for yolo
         I_transposed = np.transpose(I_resized, (2, 0, 1)) #transposing the image for processing
 
         #YOLO AND DATA PREPROCESSING
@@ -108,11 +108,11 @@ if __name__ == '__main__':
         average_responses =get_average_response_per_BB(bb_number, total_taxel_responses, taxel_predictions_info)
         bb_normal = get_bb_average_normals(bb_number,total_taxel_normals )
         bb_centroid2d, bb_centroid3d = get_bb_centroids(bb_number,S,T, total_taxels_2D_position, number_of_ids)
-        #bb_taxels_r = get_distance_from_center(bb_number, total_taxels_3D_position, total_taxel_responses)
-        #bb_taxels_r_axis = get_distance_from_axis(bb_number, total_taxels_3D_position, total_taxel_responses)
-        total_bb_forces = find_total_bb_forces(bb_number, total_taxel_responses, total_taxel_normals)
-        bb_integral_force = get_bb_integral_force(bb_number, total_bb_forces)
-        bb_integral_moment, total_bb_moment = get_bb_moment(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position)
+        #bb_taxels_r = get_distance_from_center(bb_number, total_taxels_3D_position)
+        #bb_taxels_r_axis = get_distance_from_axis(bb_number, total_taxels_3D_position)
+        #total_bb_forces = find_total_bb_forces(bb_number, total_taxel_responses, total_taxel_normals)
+        #bb_integral_force = get_bb_integral_force(bb_number, total_bb_forces)
+        #bb_integral_moment, total_bb_moment = get_bb_moment(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position)
         
         """ if bb_number !=0:
             print("Taxel Predictions:", np.shape(taxel_predictions)) #here I have all the taxel indexes of my predictions, however i need to clean them 
@@ -133,19 +133,20 @@ if __name__ == '__main__':
             print("Moment per BB", bb_integral_moment)
 
         """
-        #print("Taxel Positions:", total_taxels_3D_position)
+        #print("Taxel Positions:", np.shape(total_taxels_3D_position))
+
         
         #write_responses(bb_number, taxel_predictions_info, average_responses, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file)
-        write_forces(bb_number, taxel_predictions_info, bb_integral_force, palm_file_f,thumb_file_f,index_file_f, middle_file_f, ring_file_f, pinkie_file_f)
+        #write_forces(bb_number, taxel_predictions_info, bb_integral_force, palm_file_f,thumb_file_f,index_file_f, middle_file_f, ring_file_f, pinkie_file_f)
         #write_moments(bb_number, taxel_predictions_info, bb_integral_moment, palm_file_m,thumb_file_m,index_file_m, middle_file_m, ring_file_m, pinkie_file_m)
 
-        im_to_show = cv2.resize(I_resized, (500, 500), interpolation = cv2.INTER_AREA)
-        cv2.imshow('Tactile Image',im_to_show)
-        cv2.waitKey(1)
+        im_to_show = resize(I_resized, (500, 500), interpolation = INTER_AREA)
+        imshow('Tactile Image',im_to_show)
+        waitKey(1)
 
 
-        cv2.imshow('Tactile Image Original',I_backtorgb)
-        cv2.waitKey(1)
+        imshow('Tactile Image Original',I_backtorgb)
+        waitKey(1)
 
         sleep(0.001)
     

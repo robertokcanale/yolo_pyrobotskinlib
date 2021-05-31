@@ -136,8 +136,8 @@ if __name__ == '__main__':
 
         """
         #VISUALIZE MARKERS
-        total_responses_visualization(bb_number, V, pixel_positions, taxel_predictions_info, color_dict )
-        #average_responses_visualization(bb_number, V, bb_centroid3d, taxel_predictions_info, color_dict )
+        #total_responses_visualization(bb_number, V, pixel_positions, taxel_predictions_info, color_dict )
+        average_responses_visualization(bb_number, V, bb_centroid3d, taxel_predictions_info, color_dict )
 
         cv2.imshow('Tactile Image  Original',I_backtorgb)
         cv2.waitKey(1)

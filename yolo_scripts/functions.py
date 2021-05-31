@@ -1,5 +1,4 @@
 from random import randint
-from operator import add 
 from time import time
 
 def total_responses_visualization(bb_number, V, pixel_positions, taxel_predictions_info, color_dict):
@@ -7,10 +6,10 @@ def total_responses_visualization(bb_number, V, pixel_positions, taxel_predictio
         counter = 0
         for n in range(bb_number):
             contact_color = color_dict[taxel_predictions_info[n][0]]
-            for i in range(len(pixel_positions[n])):
+            for i,pos in enumerate(pixel_positions[n]):
                 a = randint(0,200)
                 if a == 4:
-                    V.add_marker(counter,pixel_positions[n][i], contact_color)
+                    V.add_marker(counter,pos, contact_color)
                 counter += 1
 
 def average_responses_visualization(bb_number, V, bb_centroid, taxel_predictions_info, color_dict ):
@@ -32,12 +31,8 @@ def open_files(name):
     return palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file
 
 def write_responses(bb_number, taxel_predictions_info, average_responses, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file):
-    s_palm = "".join([str(round(time(),5))," ",str(0.0),"\n"])
-    s_thumb = "".join([str(round(time(),5))," ",str(0.0),"\n"])
-    s_index = "".join([str(round(time(),5))," ",str(0.0),"\n"])
-    s_middle = "".join([str(round(time(),5))," ",str(0.0),"\n"])
-    s_ring = "".join([str(round(time(),5))," ",str(0.0),"\n"])
-    s_pinkie = "".join([str(round(time(),5))," ",str(0.0),"\n"])
+    s_palm, s_thumb,  s_index, s_middle, s_ring, s_pinkie= "".join([str(round(time(),5))," ",str(0.0),"\n"]),"".join([str(round(time(),5))," ",str(0.0),"\n"]),"".join([str(round(time(),5))," ",str(0.0),"\n"]),"".join([str(round(time(),5))," ",str(0.0),"\n"]),"".join([str(round(time(),5))," ",str(0.0),"\n"]),"".join([str(round(time(),5))," ",str(0.0),"\n"])
+
     #initialize strings to write
     for n in range(bb_number):
         if taxel_predictions_info[n][0] == "palm":
@@ -61,12 +56,7 @@ def write_responses(bb_number, taxel_predictions_info, average_responses, palm_f
     pinkie_file.write(s_pinkie)
 
 def write_forces(bb_number, taxel_predictions_info, bb_integral_force, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file):
-    s_palm =  "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
-    s_thumb = "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
-    s_index = "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
-    s_middle = "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
-    s_ring = "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
-    s_pinkie = "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
+    s_palm, s_thumb, s_index, s_middle, s_ring, s_pinkie =  "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]),"".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
     
     #initialize strings to write
     for n in range(bb_number):
@@ -93,13 +83,8 @@ def write_forces(bb_number, taxel_predictions_info, bb_integral_force, palm_file
     return
 
 def write_moments(bb_number, taxel_predictions_info, bb_integral_moment, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file):
-    s_palm =  "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
-    s_thumb = "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
-    s_index = "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
-    s_middle = "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
-    s_ring = "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
-    s_pinkie = "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
-    
+    s_palm, s_thumb, s_index, s_middle, s_ring, s_pinkie =  "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
+
     #initialize strings to write
     for n in range(bb_number):
         if taxel_predictions_info[n][0] == "palm":
