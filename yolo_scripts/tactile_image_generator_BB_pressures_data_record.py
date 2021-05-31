@@ -1,7 +1,6 @@
 import pyrobotskinlib as rsl 
 import numpy as np
 import argparse
-import time
 import torch
 import cv2
 from time import sleep
@@ -111,9 +110,9 @@ if __name__ == '__main__':
         bb_centroid2d, bb_centroid3d = get_bb_centroids(bb_number,S,T, total_taxels_2D_position, number_of_ids)
         #bb_taxels_r = get_distance_from_center(bb_number, total_taxels_3D_position, total_taxel_responses)
         #bb_taxels_r_axis = get_distance_from_axis(bb_number, total_taxels_3D_position, total_taxel_responses)
-        #total_bb_forces = find_total_bb_forces(bb_number, total_taxel_responses, total_taxel_normals)
-        #bb_integral_force = get_bb_integral_force(bb_number, total_bb_forces)
-        #bb_integral_moment, total_bb_moment = get_bb_moment(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position)
+        total_bb_forces = find_total_bb_forces(bb_number, total_taxel_responses, total_taxel_normals)
+        bb_integral_force = get_bb_integral_force(bb_number, total_bb_forces)
+        bb_integral_moment, total_bb_moment = get_bb_moment(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position)
         
         """ if bb_number !=0:
             print("Taxel Predictions:", np.shape(taxel_predictions)) #here I have all the taxel indexes of my predictions, however i need to clean them 
@@ -134,17 +133,19 @@ if __name__ == '__main__':
             print("Moment per BB", bb_integral_moment)
 
         """
-        print("Average Taxel Responses:", average_responses)
+        #print("Taxel Positions:", total_taxels_3D_position)
+        
         #write_responses(bb_number, taxel_predictions_info, average_responses, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file)
-        #write_forces(bb_number, taxel_predictions_info, bb_integral_force, palm_file_f,thumb_file_f,index_file_f, middle_file_f, ring_file_f, pinkie_file_f)
+        write_forces(bb_number, taxel_predictions_info, bb_integral_force, palm_file_f,thumb_file_f,index_file_f, middle_file_f, ring_file_f, pinkie_file_f)
         #write_moments(bb_number, taxel_predictions_info, bb_integral_moment, palm_file_m,thumb_file_m,index_file_m, middle_file_m, ring_file_m, pinkie_file_m)
 
         im_to_show = cv2.resize(I_resized, (500, 500), interpolation = cv2.INTER_AREA)
         cv2.imshow('Tactile Image',im_to_show)
         cv2.waitKey(1)
 
-        #cv2.imshow('Tactile Image  Original',I_backtorgb)
-        #cv2.waitKey(1)
+
+        cv2.imshow('Tactile Image Original',I_backtorgb)
+        cv2.waitKey(1)
 
         sleep(0.001)
     

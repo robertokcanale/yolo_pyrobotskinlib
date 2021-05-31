@@ -36,48 +36,17 @@ def bb_active_taxel (bb_number, T, bb_predictions_reshaped, TIB, skin_faces):
 
 #Get total data for the all the taxels and bounding boxes
 def get_total_data(bb_number, S, T, taxel_predictions):
-    total_taxel_responses = np.empty((bb_number,), dtype = object)
-    total_taxels_3D_position = np.empty((bb_number,), dtype = object)
-    total_taxels_2D_position = np.empty((bb_number,), dtype = object)
-    total_taxel_normals = np.empty((bb_number,), dtype = object)
-    #TOTAL RESPONSES
-    for n in range(bb_number):
-        taxel_response = [] #empty array for the responses of a single bounding box
-        taxels_3d_position = [] #empty array for the 3d positions of a single bounding box
-        taxels_2d_position = [] #empty array for the idus of a single bounding box
-        taxel_normal = [] #empty array for the normals single bounding box
-        for i in taxel_predictions[n]:
-            if S.taxels[i].get_taxel_response() != 0: 
-                taxel_response.append(S.taxels[i].get_taxel_response()) 
-                taxels_3d_position.append(S.taxels[i].get_taxel_position()) 
-                taxel_normal.append(S.taxels[i].get_taxel_normal()) 
-                taxels_2d_position.append(T.taxels[i].get_taxel_position()) #on the tactile map
-                
-        if taxel_response == [] or taxels_3d_position == []:
-            total_taxel_responses[n] = []
-            total_taxels_3D_position[n] = []
-            total_taxels_2D_position[n] = []
-            total_taxel_normals[n] = []
-        else: 
-            total_taxel_responses[n] = taxel_response
-            total_taxels_3D_position[n] = taxels_3d_position
-            total_taxel_normals[n] = taxel_normal
-            total_taxels_2D_position[n] = taxels_2d_position
+
+    total_taxel_responses = [[S.taxels[i].get_taxel_response() for i in taxel_predictions[n]] for n in range(bb_number)] 
+    total_taxels_3D_position = [[S.taxels[i].get_taxel_position()for i in taxel_predictions[n]] for n in range(bb_number)] 
+    total_taxel_normals = [[S.taxels[i].get_taxel_normal() for i in taxel_predictions[n]] for n in range(bb_number)] 
+    total_taxels_2D_position = [[T.taxels[i].get_taxel_position() for i in taxel_predictions[n]] for n in range(bb_number)] 
+
     return total_taxel_responses, total_taxels_3D_position, total_taxel_normals , total_taxels_2D_position
 
 #AVERAGE RESPONSES including taxels with 0 response
 def get_average_response_per_BB(bb_number, total_taxel_responses, taxel_predictions_info):
-    """ average_responses = np.empty((bb_number,), dtype = object)
-    for n in range(bb_number):
-        if len(total_taxel_responses[n]) != 0:
-            average_response = sum(total_taxel_responses[n])/taxel_predictions_info[n][2]
-            average_responses[n] = average_response
-            #print("Average Response of", taxel_predictions_info[n][0], "is", average_responses[n])
-        else:
-            average_responses[n] = 0.0
-    """
     average_responses = [(sum(total_taxel_responses[n])/taxel_predictions_info[n][2]) for n in range(bb_number) if (len(total_taxel_responses[n]) != 0)]
-
     return average_responses
 
 #2D AND 3D CENTROID OF BB
@@ -108,7 +77,7 @@ def get_bb_centroids(bb_number,S,T, total_taxels_2D_position, number_of_ids):
 def get_bb_average_normals(bb_number,total_taxel_normals):
     bb_normal = np.empty((bb_number,), dtype = object)
     #AVERAGE NORMAL
-    for n in range(bb_number):
+    """for n in range(bb_number):
         average_normal = [0.0,0.0,0.0]
         if len(total_taxel_normals[n]) != 0:
             for i in range(len(total_taxel_normals[n])):
@@ -122,7 +91,12 @@ def get_bb_average_normals(bb_number,total_taxel_normals):
             bb_normal[n] = average_normal
             #print("Position of Centroid", taxel_predictions_info[n][0], "is", bb_centroid[n])
         else:
-            bb_normal[n] = []  
+            bb_normal[n] = []  """
+    average_normal = np.zeros((3,), dtype=np.float32)
+    for n in range(bb_number):
+        average_normal = [(-np.add(average_normal,total_taxel_normals[n][i])/len(total_taxel_normals[n])) for i in range(len(total_taxel_normals[n]))]
+        bb_normal[n] = average_normal
+
     return bb_normal
 
 #BACK PROJECT A POINT FROM 2D MAP TO 3D

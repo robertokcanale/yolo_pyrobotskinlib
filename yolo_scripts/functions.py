@@ -8,7 +8,7 @@ def total_responses_visualization(bb_number, V, pixel_positions, taxel_predictio
         for n in range(bb_number):
             contact_color = color_dict[taxel_predictions_info[n][0]]
             for i in range(len(pixel_positions[n])):
-                a = randint(0,50)
+                a = randint(0,200)
                 if a == 4:
                     V.add_marker(counter,pixel_positions[n][i], contact_color)
                 counter += 1

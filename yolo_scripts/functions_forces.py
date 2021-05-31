@@ -61,7 +61,7 @@ def get_distance_from_center(bb_number, total_taxel_positions, total_taxel_respo
     for n in range(bb_number):
         r = []
         for i in range(len(total_taxel_responses[n])): #int(np.size(total_taxel_positions)/3)
-            distance = math.sqrt((pow((total_taxel_positions[n][i][0] - 0),2) + pow((total_taxel_positions[n][i][1] - 0),2) + pow((total_taxel_positions[n][i][2] - 0),2)) )
+            distance = sqrt((pow((total_taxel_positions[n][i][0] - 0),2) + pow((total_taxel_positions[n][i][1] - 0),2) + pow((total_taxel_positions[n][i][2] - 0),2)) )
             r.append(distance)
         bb_taxels_r[n] = r
     return bb_taxels_r

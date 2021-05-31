@@ -1,11 +1,9 @@
 import pyrobotskinlib as rsl 
 import numpy as np
 import argparse
-import time
 import torch
 import cv2
-import time
-from PIL import Image
+from time import sleep
 from functions import *
 from functions_taxel_data import *
 from functions_bb import *
@@ -117,8 +115,8 @@ if __name__ == '__main__':
         bb_normal = get_bb_average_normals(bb_number,total_taxel_normals )
         bb_centroid2d, bb_centroid3d = get_bb_centroids(bb_number,S,T, total_taxels_2D_position, number_of_ids)
         total_bb_forces = find_total_bb_forces(bb_number, total_taxel_responses, total_taxel_normals)
-        bb_taxels_r = get_distance_from_center(bb_number, total_taxels_3D_position, total_taxel_responses)
-        bb_taxels_r_axis = get_distance_from_axis(bb_number, total_taxels_3D_position, total_taxel_responses)
+        #bb_taxels_r = get_distance_from_center(bb_number, total_taxels_3D_position, total_taxel_responses)
+        #bb_taxels_r_axis = get_distance_from_axis(bb_number, total_taxels_3D_position, total_taxel_responses)
         bb_integral_force = get_bb_integral_force(bb_number, total_bb_forces)
         bb_moment = get_bb_moment(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position)
         
@@ -137,14 +135,12 @@ if __name__ == '__main__':
             print("Moment per BB", bb_moment)
 
         """
-
-
         #VISUALIZE MARKERS
-        #total_responses_visualization(bb_number, V, pixel_positions, taxel_predictions_info, color_dict )
+        total_responses_visualization(bb_number, V, pixel_positions, taxel_predictions_info, color_dict )
         #average_responses_visualization(bb_number, V, bb_centroid3d, taxel_predictions_info, color_dict )
 
         cv2.imshow('Tactile Image  Original',I_backtorgb)
         cv2.waitKey(1)
 
-        time.sleep(1)
+        sleep(1)
         V.remove_markers()
