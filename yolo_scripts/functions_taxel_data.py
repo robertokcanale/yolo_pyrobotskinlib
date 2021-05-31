@@ -1,24 +1,5 @@
 import numpy as np
-import argparse
-import torch
-import cv2
-import random
-import math
-from operator import add 
-import time
-
-from functions import *
-from functions_bb import *
-from functions_forces import *
-
-from models.experimental import attempt_load
-from utils.datasets import LoadStreams, LoadImages
-from utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
-    scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path
-from utils.plots import plot_one_box
-from utils.torch_utils import select_device, load_classifier, time_synchronized
-
-
+from math import sqrt, pow
 #Get list of active taxels per bounding box on the image, create an array of the taxel center
 def bb_active_taxel (bb_number, T, bb_predictions_reshaped, TIB, skin_faces):
     taxel_predictions = np.empty((bb_number,), dtype = object)
@@ -86,14 +67,16 @@ def get_total_data(bb_number, S, T, taxel_predictions):
 
 #AVERAGE RESPONSES including taxels with 0 response
 def get_average_response_per_BB(bb_number, total_taxel_responses, taxel_predictions_info):
-    average_responses = np.empty((bb_number,), dtype = object)
+    """ average_responses = np.empty((bb_number,), dtype = object)
     for n in range(bb_number):
         if len(total_taxel_responses[n]) != 0:
             average_response = sum(total_taxel_responses[n])/taxel_predictions_info[n][2]
             average_responses[n] = average_response
-            print("Average Response of", taxel_predictions_info[n][0], "is", average_responses[n])
+            #print("Average Response of", taxel_predictions_info[n][0], "is", average_responses[n])
         else:
             average_responses[n] = 0.0
+    """
+    average_responses = [(sum(total_taxel_responses[n])/taxel_predictions_info[n][2]) for n in range(bb_number) if (len(total_taxel_responses[n]) != 0)]
 
     return average_responses
 
@@ -161,7 +144,7 @@ def back_project_centroid(S, T, bb_centroid2d, number_of_ids):
         taxel_coords = T.taxels[i].get_taxel_position()
         x = taxel_coords[0]
         y = taxel_coords[1]
-        distance = math.sqrt( math.pow(bb_centroid2d[0] - x,2) + math.pow(bb_centroid2d[1] -y, 2))
+        distance = sqrt( pow(bb_centroid2d[0] - x,2) + pow(bb_centroid2d[1] -y, 2))
 
         if distance < short_dist1:
             short_dist3 = short_dist2

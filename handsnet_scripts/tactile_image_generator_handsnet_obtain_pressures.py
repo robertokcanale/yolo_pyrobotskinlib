@@ -53,11 +53,16 @@ if __name__ == '__main__':
         cv2.waitKey(1)
 
         #Get Total Taxels Responses and Positions
-        total_taxel_response, total_taxel_positions, total_taxel_normals = get_taxel_data(S, number_of_ids)
-
-        #print(total_taxel_normals)
-
+        total_taxel_response, total_taxel_3d_position, total_taxel_normal, total_taxel_2d_position= get_taxel_data(S,T, number_of_ids)
+        centroid2d, centroid3d = get_centroid(S,T, total_taxel_2d_position, number_of_ids)
         #Active taxels distance from [0,0,0]
         #r = get_distance_from_center(total_taxel_positions,total_taxel_response) 
         #Active taxels distance from [x,0,0], the cylinder axis
         #r_axis = get_distance_from_axis(total_taxel_positions, total_taxel_response)
+        total_vector_force, integral_force = find_vector_forces(total_taxel_response, total_taxel_normal)
+        total_vector_moment, integral_moment = find_vector_moments(total_vector_force, centroid3d, total_taxel_3d_position)
+        print("Total Force", total_vector_force)
+        print("Total Moment", total_vector_moment)
+
+        print("Integral Force", integral_force)
+        print("Integral Moment", integral_moment)
