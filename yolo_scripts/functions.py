@@ -55,6 +55,13 @@ def write_responses(bb_number, taxel_predictions_info, average_responses, palm_f
     ring_file.write(s_ring)
     pinkie_file.write(s_pinkie)
 
+    palm_file.flush()
+    thumb_file.flush()
+    index_file.flush()
+    middle_file.flush()
+    ring_file.flush()
+    pinkie_file.flush()
+
 def write_forces(bb_number, taxel_predictions_info, bb_integral_force, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file):
     s_palm, s_thumb, s_index, s_middle, s_ring, s_pinkie =  "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]),"".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
     
@@ -79,8 +86,13 @@ def write_forces(bb_number, taxel_predictions_info, bb_integral_force, palm_file
     middle_file.write(s_middle)
     ring_file.write(s_ring)
     pinkie_file.write(s_pinkie)    
+    palm_file.flush()
+    thumb_file.flush()
+    index_file.flush()
+    middle_file.flush()
+    ring_file.flush()
+    pinkie_file.flush()
     
-    return
 
 def write_moments(bb_number, taxel_predictions_info, bb_integral_moment, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file):
     s_palm, s_thumb, s_index, s_middle, s_ring, s_pinkie =  "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
@@ -106,8 +118,12 @@ def write_moments(bb_number, taxel_predictions_info, bb_integral_moment, palm_fi
     middle_file.write(s_middle)
     ring_file.write(s_ring)
     pinkie_file.write(s_pinkie)    
+    palm_file.flush()
+    thumb_file.flush()
+    index_file.flush()
+    middle_file.flush()
+    ring_file.flush()
+    pinkie_file.flush()
     
-    return
 
-    return
 
