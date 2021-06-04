@@ -93,7 +93,6 @@ def write_forces(bb_number, taxel_predictions_info, bb_integral_force, palm_file
     ring_file.flush()
     pinkie_file.flush()
     
-
 def write_moments(bb_number, taxel_predictions_info, bb_integral_moment, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file):
     s_palm, s_thumb, s_index, s_middle, s_ring, s_pinkie =  "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"]), "".join([str(round(time(),5))," ",str(0.0)," ",str(0.0)," ",str(0.0),"\n"])
 

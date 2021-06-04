@@ -9,7 +9,7 @@ from functions_bb import *
 from functions_forces import *
 from functions_taxel_data import *
 from models.experimental import attempt_load
-from utils.general import non_max_suppression, set_logging,
+from utils.general import non_max_suppression, set_logging
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device
 
@@ -31,6 +31,8 @@ if __name__ == '__main__':
     number_of_faces = len(skin_faces)
     taxel_ids = S.get_taxel_ids()
     number_of_ids = len(taxel_ids)
+    taxel_coords = np.zeros((number_of_ids,3))
+    taxel_coords = [T.taxels[i].get_taxel_position() for i in range(number_of_ids)]
 
     #INITIALIZE YOLOV5
     parser = argparse.ArgumentParser()
@@ -108,7 +110,7 @@ if __name__ == '__main__':
         #average_responses =get_average_response_per_BB(bb_number, total_taxel_responses, taxel_predictions_info)
         bb_normal = get_bb_average_normals(bb_number,total_taxel_normals )
 
-        bb_centroid2d, bb_centroid3d = get_bb_centroids(bb_number,S,T, total_taxels_2D_position, number_of_ids)
+        bb_centroid2d, bb_centroid3d = get_bb_centroids(bb_number,S,T, total_taxels_2D_position, taxel_coords)
 
         #bb_taxels_r = get_distance_from_center(bb_number, total_taxels_3D_position)
         #bb_taxels_r_axis = get_distance_from_axis(bb_number, total_taxels_3D_position)
@@ -152,5 +154,5 @@ if __name__ == '__main__':
         imshow('Tactile Image Original',I_backtorgb)
         waitKey(1)
 
-        sleep(0.001)
+        #sleep(0.001)
     

@@ -54,7 +54,7 @@ def get_distance_from_axis(total_taxel_position, total_taxel_response):
     return r_axis
 
 #2D AND 3D CENTROID OF BB
-def get_centroid(S,T, total_taxels_2d_position, number_of_ids):
+def get_centroid(S,T, total_taxels_2d_position, taxel_coords):
     centroid2d = [0.0,0.0,0.0]
     centroid3d = [0.0,0.0,0.0]
     if len(total_taxels_2d_position) != 0:
@@ -66,13 +66,13 @@ def get_centroid(S,T, total_taxels_2d_position, number_of_ids):
         centroid2d[1] = centroid2d[1] / len(total_taxels_2d_position)
         centroid2d[2] = centroid2d[2] / len(total_taxels_2d_position)
         #used for projecting a 2D centroid on the tactile map to a 3D point
-        centroid3d = back_project_centroid(S, T, centroid2d, number_of_ids) 
+        centroid3d = back_project_centroid(S, T, centroid2d, taxel_coords) 
     else:
         centroid2d = []
         centroid3d = [] 
     return centroid2d, centroid3d
 
-#General case vector forces
+#General case vectorW forces
 def find_vector_forces(total_taxel_response, total_taxel_normal):
     total_vector_force = []
     integral_force = [0.0,0.0,0.0]
@@ -108,25 +108,17 @@ def find_vector_moments(total_vector_force, centroid3d, total_taxel_3d_position)
     return total_vector_moment, integral_moment
 
 #BACK PROJECT A POINT FROM 2D MAP TO 3D
-def back_project_centroid(S, T, bb_centroid2d, number_of_ids):
+def back_project_centroid(S, T, bb_centroid2d, taxel_coords):
     #initializing
-    short_dist1, short_dist2, short_dist3, taxel_id1, taxel_id2, taxel_id3  = 10, 10, 10, 0, 0, 0
     centroid_3d, P, B, C = [0.0,0.0,0.0], [0.0,0.0], [0.0,0.0], [0.0,0.0]
+    #finding the indexes of the 3 closest points, with numpy is very fast
+    difference = np.subtract(taxel_coords, bb_centroid2d)
+    diff_pow2 = np.square(difference)
+    diff_sum = np.sum(diff_pow2, axis=1)
+    diff_squared = np.square(diff_sum)
+    minimum_indexes = diff_squared.argsort()[:3]
 
-    #find the 3 closest taxels
-    for i in range(number_of_ids):
-        taxel_coords = T.taxels[i].get_taxel_position()
-        x, y = taxel_coords[0], taxel_coords[1]
-        distance = sqrt( pow(bb_centroid2d[0] - x,2) + pow(bb_centroid2d[1] -y, 2))
-        if distance < short_dist1:
-            short_dist3, short_dist2, short_dist1 = short_dist2, short_dist1, distance
-            taxel_id3, taxel_id2, taxel_id1 = taxel_id2, taxel_id1, i
-        elif distance < short_dist2:
-            short_dist3, short_dist2 = short_dist2, distance
-            taxel_id3, taxel_id2 = taxel_id2, i
-        elif distance < short_dist3:
-            short_dist3, taxel_id3 = distance, i
-    a,  b, c = T.taxels[taxel_id1].get_taxel_position(), T.taxels[taxel_id2].get_taxel_position(), T.taxels[taxel_id3].get_taxel_position()
+    a,  b, c = T.taxels[minimum_indexes[0]].get_taxel_position(), T.taxels[minimum_indexes[1]].get_taxel_position(), T.taxels[minimum_indexes[2]].get_taxel_position()
 
     #Compute the cofficents of the convex combination
     P[0], P[1], B[0], B[1], C[0], C[1] = bb_centroid2d[0]-a[0], bb_centroid2d[1]-a[1], b[0]-a[0], b[1]-a[1], c[0]-a[0], c[1]-a[1]
@@ -134,7 +126,7 @@ def back_project_centroid(S, T, bb_centroid2d, number_of_ids):
     d = B[0]*C[1] - C[0]*B[1]
     wa, wb, wc = (P[0]*(B[1]-C[1]) + P[1]*(C[0]-B[0]) + B[0]*C[1] - C[0]*B[1]) / d, (P[0]*C[1] - P[1]*C[0]) / d, (P[1]*B[0] - P[0]*B[1]) / d
 
-    v1, v2, v3 = S.taxels[taxel_id1].get_taxel_position(), S.taxels[taxel_id2].get_taxel_position(), S.taxels[taxel_id3].get_taxel_position()
+    v1, v2, v3 = S.taxels[minimum_indexes[0]].get_taxel_position(), S.taxels[minimum_indexes[1]].get_taxel_position(), S.taxels[minimum_indexes[2]].get_taxel_position()
 
     centroid_3d[0], centroid_3d[1], centroid_3d[2] = wa*v1[0] + wb*v2[0] + wc*v3[0], wa*v1[1] + wb*v2[1] + wc*v3[1], wa*v1[2] + wb*v2[2] + wc*v3[2]
     

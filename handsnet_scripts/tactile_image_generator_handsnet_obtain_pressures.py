@@ -36,6 +36,8 @@ if __name__ == '__main__':
     number_of_faces = len(skin_faces)
     taxel_ids = S.get_taxel_ids()
     number_of_ids = len(taxel_ids)
+    taxel_coords = np.zeros((number_of_ids,3))
+    taxel_coords = [T.taxels[i].get_taxel_position() for i in range(number_of_ids)]
     #LOAD HANDSNET
     #HandsNet = tf.keras.models.load_model('../data/HandsNet_Finetuned.h5')
     #HandsNet.trainable=False
@@ -55,7 +57,7 @@ if __name__ == '__main__':
 
         #Get Total Taxels Responses and Positions
         total_taxel_response, total_taxel_3d_position, total_taxel_normal, total_taxel_2d_position= get_taxel_data(S,T, number_of_ids)
-        centroid2d, centroid3d = get_centroid(S,T, total_taxel_2d_position, number_of_ids)
+        centroid2d, centroid3d = get_centroid(S,T, total_taxel_2d_position, taxel_coords)
 
         #Active taxels distance from [0,0,0]
         #r = get_distance_from_center(total_taxel_positions,total_taxel_response) 

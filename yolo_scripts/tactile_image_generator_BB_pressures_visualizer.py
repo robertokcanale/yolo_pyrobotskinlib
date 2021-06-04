@@ -3,7 +3,7 @@ import numpy as np
 import argparse
 import torch
 import cv2
-from time import sleep
+from time import sleep,time
 from functions import *
 from functions_taxel_data import *
 from functions_bb import *
@@ -42,6 +42,8 @@ if __name__ == '__main__':
     number_of_faces = len(skin_faces)
     taxel_ids = S.get_taxel_ids()
     number_of_ids = len(taxel_ids)
+    taxel_coords = np.zeros((number_of_ids,3))
+    taxel_coords = [T.taxels[i].get_taxel_position() for i in range(number_of_ids)]
 
     #INITIALIZE YOLOV5
     parser = argparse.ArgumentParser()
@@ -113,7 +115,10 @@ if __name__ == '__main__':
         total_taxel_responses, total_taxels_3D_position, total_taxel_normals, total_taxels_2D_position = get_total_data(bb_number, S, T, taxel_predictions)
         average_responses =get_average_response_per_BB(bb_number, total_taxel_responses, taxel_predictions_info)
         bb_normal = get_bb_average_normals(bb_number,total_taxel_normals )
-        bb_centroid2d, bb_centroid3d = get_bb_centroids(bb_number,S,T, total_taxels_2D_position, number_of_ids)
+        t =time()
+        bb_centroid2d, bb_centroid3d = get_bb_centroids(bb_number,S,T, total_taxels_2D_position, taxel_coords)
+        print("bbcentroids time", time()-t)
+        print(bb_centroid3d)
         total_bb_forces = find_total_bb_forces(bb_number, total_taxel_responses, total_taxel_normals)
         #bb_taxels_r = get_distance_from_center(bb_number, total_taxels_3D_position, total_taxel_responses)
         #bb_taxels_r_axis = get_distance_from_axis(bb_number, total_taxels_3D_position, total_taxel_responses)
@@ -142,5 +147,5 @@ if __name__ == '__main__':
         cv2.imshow('Tactile Image  Original',I_backtorgb)
         cv2.waitKey(1)
 
-        sleep(1)
+        sleep(0.3)
         V.remove_markers()
