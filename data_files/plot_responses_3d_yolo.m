@@ -1,4 +1,4 @@
-id = '_integral_forces';
+id = '_integral_moments';
 palm = readtable(strcat('data_files/palm', id, '.txt'));
 thumb = readtable(strcat('data_files/thumb', id, '.txt'));
 index = readtable(strcat('data_files/index', id, '.txt'));
@@ -37,7 +37,7 @@ plot(x,pinkie.Var2,'Color','#8E8E8E','LineWidth',1)
 hold on
 axis on
 
-xlabel('Time ms','FontSize',12,'FontName', 'CMU Serif', 'Interpreter', 'latex') 
+xlabel('Instant','FontSize',12,'FontName', 'CMU Serif', 'Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif', 'Interpreter', 'latex') 
 title('X','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
@@ -63,7 +63,7 @@ plot(x,pinkie.Var3,'Color','#8E8E8E','LineWidth',1)
 hold on
 axis on
 
-xlabel('Time ms','FontSize',12,'FontName', 'CMU Serif', 'Interpreter', 'latex') 
+xlabel('Instant','FontSize',12,'FontName', 'CMU Serif', 'Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif', 'Interpreter', 'latex') 
 title('Y','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
@@ -92,11 +92,11 @@ legend({'palm','thumb', 'index', 'middle', 'ring', 'pinkie'}, 'FontSize',12,'Fon
 
 axis on
 
-xlabel('Time ms','FontSize',12,'FontName', 'CMU Serif', 'Interpreter', 'latex') 
+xlabel('Instant','FontSize',12,'FontName', 'CMU Serif', 'Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif', 'Interpreter', 'latex') 
 title('Z','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
-sgtitle('Finger Forces Integral','FontSize',25,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
+sgtitle('Finger Moments Integral','FontSize',25,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
 
 % Construct a Legend with the data from the sub-plots

@@ -2,6 +2,7 @@ import pyrobotskinlib as rsl
 import numpy as np
 import argparse
 import torch
+import math
 from cv2 import cvtColor, resize, imshow, waitKey, INTER_AREA, COLOR_GRAY2RGB
 from time import sleep, time
 from functions import *
@@ -32,7 +33,8 @@ if __name__ == '__main__':
     taxel_ids = S.get_taxel_ids()
     number_of_ids = len(taxel_ids)
     taxel_coords = np.zeros((number_of_ids,3))
-    taxel_coords = [T.taxels[i].get_taxel_position() for i in range(number_of_ids)]
+    for i in range(number_of_ids):
+        taxel_coords[i] = T.taxels[i].get_taxel_position()
 
     #INITIALIZE YOLOV5
     parser = argparse.ArgumentParser()
@@ -108,38 +110,23 @@ if __name__ == '__main__':
         total_taxel_responses, total_taxels_3D_position, total_taxel_normals, total_taxels_2D_position = get_total_data(bb_number, S, T, taxel_predictions)
 
         #average_responses =get_average_response_per_BB(bb_number, total_taxel_responses, taxel_predictions_info)
-        bb_normal = get_bb_average_normals(bb_number,total_taxel_normals )
+        bb_normal = get_bb_average_normals(bb_number,total_taxel_normals)
 
         bb_centroid2d, bb_centroid3d = get_bb_centroids(bb_number,S,T, total_taxels_2D_position, taxel_coords)
 
-        #bb_taxels_r = get_distance_from_center(bb_number, total_taxels_3D_position)
-        #bb_taxels_r_axis = get_distance_from_axis(bb_number, total_taxels_3D_position)
         total_bb_forces = find_total_bb_forces(bb_number, total_taxel_responses, total_taxel_normals)
-
+        #I  can either get the area or the forcs
         bb_integral_force = get_bb_integral_force(bb_number, total_bb_forces)
 
-        bb_integral_moment, total_bb_moment = get_bb_moment(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position)
+        #area is how much area each taxels or space around the taxel takes
+        area = 0.1
+        #bb_integral_pressure = get_bb_integral_pressure(bb_number, total_bb_forces, area)
+        #wrt. the bb centroid
+        #bb_integral_moment, total_bb_moment = get_bb_moment(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position)
+        #wrt. the center
+        bb_integral_moment, total_bb_moment= get_bb_moment_from_center(bb_number, total_bb_forces, total_taxels_3D_position)
+        #bb_integral_moment_pressure, total_bb_moment_pressure = get_bb_moment_pressures(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position, area)
 
-
-        """ if bb_number !=0:
-            print("Taxel Predictions:", np.shape(taxel_predictions)) #here I have all the taxel indexes of my predictions, however i need to clean them 
-            print("Taxel Predictions Info:", np.shape(taxel_predictions_info[1])) #here I have all the taxel indexes of my predictions, however i need to clean them 
-            print("Taxel Responses:", np.shape(total_taxel_responses[1])) 
-            print("Taxel Positions:", np.shape(total_taxels_3D_position[1]))
-            print("Average Taxel Responses:", np.shape(average_responses))
-            print("Average Taxel Positions:", np.shape(bb_centroid3d[1]))
-            print("Total_BB_forces:", np.shape(total_bb_forces[1]))
-            print("BB distances from center:", np.shape(bb_taxels_r[1]))
-            print("BB distances from axis:", np.shape(bb_taxels_r_axis[1]))
-            print("Taxel Responses:", np.shape(total_taxel_responses[0]))
-            print("Integral force per BB", bb_integral_force)
-            print("Moment per BB", bb_integral_moment)
-            print("Total force per BB", total_bb_forces)
-            print("Total moment per BB", total_bb_moment)
-            print("Integral force per BB", bb_integral_force)
-            print("Moment per BB", bb_integral_moment)
-
-        """
 
         
         #write_responses(bb_number, taxel_predictions_info, average_responses, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file)
@@ -154,5 +141,4 @@ if __name__ == '__main__':
         imshow('Tactile Image Original',I_backtorgb)
         waitKey(1)
 
-        #sleep(0.001)
-    
+        sleep(0.001)    

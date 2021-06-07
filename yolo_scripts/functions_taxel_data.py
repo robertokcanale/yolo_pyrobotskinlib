@@ -34,6 +34,7 @@ def bb_active_taxel (bb_number, T, bb_predictions_reshaped, TIB, skin_faces):
     return taxel_predictions, pixel_positions, taxel_predictions_info
 
 #Get total data for the all the taxels and bounding boxes
+#NORMALS ARE ALREADY NORMALIZED
 def get_total_data(bb_number, S, T, taxel_predictions):
 
     total_taxel_responses = [[S.taxels[i].get_taxel_response() for i in taxel_predictions[n]] for n in range(bb_number)] 
@@ -49,7 +50,7 @@ def get_average_response_per_BB(bb_number, total_taxel_responses, taxel_predicti
     return average_responses
 
 #2D AND 3D CENTROID OF BB
-def get_bb_centroids(bb_number,S,T, total_taxels_2D_position, number_of_ids, taxel_coords):
+def get_bb_centroids(bb_number,S,T, total_taxels_2D_position, taxel_coords):
     bb_centroid2d, bb_centroid3d = np.empty((bb_number,), dtype = object), np.empty((bb_number,), dtype = object)
     for n in range(bb_number):
         average_position = [0.0,0.0,0.0]
@@ -63,7 +64,7 @@ def get_bb_centroids(bb_number,S,T, total_taxels_2D_position, number_of_ids, tax
             average_position[2] = average_position[2] / len(total_taxels_2D_position[n])
             bb_centroid2d[n]=average_position
             #used for projecting a 2D centroid on the tactile map to a 3D point
-            bb_centroid3d[n] = back_project_centroid(S, T, bb_centroid2d[n], number_of_ids, taxel_coords) 
+            bb_centroid3d[n] = back_project_centroid(S, T, bb_centroid2d[n], taxel_coords) 
         else:
             bb_centroid2d[n] = []
             bb_centroid3d[n] = []  

@@ -1,19 +1,15 @@
 import pyrobotskinlib as rsl 
 import numpy as np
-import os
-import argparse
-import torch
-import tensorflow as tf
-import cv2
-from PIL import Image
-import time
+#import tensorflow as tf
+from cv2 import cvtColor, resize, imshow, waitKey, INTER_AREA, COLOR_GRAY2RGB
+from  time import sleep 
 from functions import *
             
 
 #MAIN
 if __name__ == '__main__':
     #LIMITING THE GPU
-    gpus = tf.config.experimental.list_physical_devices('GPU')
+    """ gpus = tf.config.experimental.list_physical_devices('GPU')
     if gpus:
         # Restrict TensorFlow to only allocate 5GB  of memory on the first GPU
         try:
@@ -21,7 +17,7 @@ if __name__ == '__main__':
             logical_gpus = tf.config.experimental.list_logical_devices('GPU')
         except RuntimeError as e:
             print(e) 
-
+    """
     #LOAD TACTILE IMAGE & SKIN PROPERTIES
     S = rsl.RobotSkin("../calibration_files/collaborate_handle_1_ale.json")
     u = rsl.SkinUpdaterFromShMem(S)
@@ -52,8 +48,9 @@ if __name__ == '__main__':
         I = I.reshape([rows,cols]) #reshape it into a 2d array
         #I_toshow, hand_contact = image_prediction(I, HandsNet)
         #contact(hand_contact)
-        cv2.imshow('Tactile Image',I)
-        cv2.waitKey(1)
+        im_to_show = resize(I, (500, 500), interpolation = INTER_AREA)
+        imshow('Tactile Image',im_to_show)
+        waitKey(1)
 
         #Get Total Taxels Responses and Positions
         total_taxel_response, total_taxel_3d_position, total_taxel_normal, total_taxel_2d_position= get_taxel_data(S,T, number_of_ids)
@@ -65,7 +62,9 @@ if __name__ == '__main__':
         #r_axis = get_distance_from_axis(total_taxel_positions, total_taxel_response)
         total_vector_force, integral_force = find_vector_forces(total_taxel_response, total_taxel_normal)
         total_vector_moment, integral_moment = find_vector_moments(total_vector_force, centroid3d, total_taxel_3d_position)
+        #total_vector_moment, integral_moment =   find_vector_moments_from_center(total_vector_force, total_taxel_3d_position)
         #print("Total Force", total_vector_force)
         #print("Total Moment", total_vector_moment)
 
         write_forces_and_moments(integral_force, integral_moment, force_file, moment_file)
+        sleep(0.001)

@@ -107,6 +107,23 @@ def find_vector_moments(total_vector_force, centroid3d, total_taxel_3d_position)
         integral_moment[2] = integral_moment[2] / len(total_vector_force)
     return total_vector_moment, integral_moment
 
+def find_vector_moments_from_center(total_vector_force, total_taxel_3d_position):
+    total_vector_moment = []
+    integral_moment = [0.0,0.0,0.0]
+    moment = [0.0,0.0,0.0]
+    if len(total_vector_force) != 0:
+        for i, vec_force in enumerate(total_vector_force):
+            distance = np.subtract(total_taxel_3d_position[i], [0,0,0]) #between centroid and taxel position
+            moment = np.cross(distance, vec_force) #vector produce between distance and vector force on the taxel
+            integral_moment = np.add(integral_moment, moment) # summing it up all the moments
+            total_vector_moment.append(moment) #append the single moment in a whole vector
+        #TO BE MODIFIED
+        integral_moment[0] = integral_moment[0] / len(total_vector_force) #total moments divided by their number to get the average
+        integral_moment[1] = integral_moment[1] / len(total_vector_force)
+        integral_moment[2] = integral_moment[2] / len(total_vector_force)
+    return total_vector_moment, integral_moment
+    
+
 #BACK PROJECT A POINT FROM 2D MAP TO 3D
 def back_project_centroid(S, T, bb_centroid2d, taxel_coords):
     #initializing
@@ -140,7 +157,6 @@ def open_files():
 def write_forces_and_moments(integral_force, integral_moment, force_file, moment_file):
     s_force =  "".join([str(round(time(),6))," ",str(integral_force[0])," ",str(integral_force[1])," ",str(integral_force[2]),"\n"])
     s_moment = "".join([str(round(time(),6))," ",str(integral_moment[0])," ",str(integral_moment[1])," ",str(integral_moment[2]),"\n"])
-    print(s_force, s_moment)
     force_file.write(s_force)
     moment_file.write(s_moment)
     force_file.flush()
