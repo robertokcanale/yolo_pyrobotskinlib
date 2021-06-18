@@ -65,6 +65,8 @@ def get_bb_centroids(bb_number,S,T, total_taxels_2D_position, taxel_coords):
             bb_centroid2d[n]=average_position
             #used for projecting a 2D centroid on the tactile map to a 3D point
             bb_centroid3d[n] = back_project_centroid(S, T, bb_centroid2d[n], taxel_coords) 
+            if bb_centroid3d[n] == [0,0,0]:
+                print("Centroid = 0")
         else:
             bb_centroid2d[n] = []
             bb_centroid3d[n] = []  
@@ -101,6 +103,10 @@ def back_project_centroid(S, T, bb_centroid2d, taxel_coords):
     diff_sum = np.sum(diff_pow2, axis=1)
     diff_squared = np.square(diff_sum)
     minimum_indexes = diff_squared.argsort()[:3]
+
+    if minimum_indexes[0]==-1 or minimum_indexes[1]==-1 or minimum_indexes[2]==-1:
+        v=[0,0,0]
+        return v
 
     a,  b, c = T.taxels[minimum_indexes[0]].get_taxel_position(), T.taxels[minimum_indexes[1]].get_taxel_position(), T.taxels[minimum_indexes[2]].get_taxel_position()
     

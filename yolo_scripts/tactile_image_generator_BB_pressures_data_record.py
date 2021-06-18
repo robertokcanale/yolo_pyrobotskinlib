@@ -32,9 +32,7 @@ if __name__ == '__main__':
     number_of_faces = len(skin_faces)
     taxel_ids = S.get_taxel_ids()
     number_of_ids = len(taxel_ids)
-    taxel_coords = np.zeros((number_of_ids,3))
-    for i in range(number_of_ids):
-        taxel_coords[i] = T.taxels[i].get_taxel_position()
+    taxel_coords = [T.taxels[i].get_taxel_position() for i in range(number_of_ids)]
 
     #INITIALIZE YOLOV5
     parser = argparse.ArgumentParser()
@@ -63,6 +61,8 @@ if __name__ == '__main__':
     palm_file_m,thumb_file_m,index_file_m, middle_file_m, ring_file_m, pinkie_file_m = open_files("integral_moments")
 
     while 1:
+        t0=time()
+
         #GET NEW DATA
         u.make_this_thread_wait_for_new_data()
         #CREATE TACTILE IMAGE AND PROCESS IMAGE (for recorded data)
@@ -119,12 +119,12 @@ if __name__ == '__main__':
         bb_integral_force = get_bb_integral_force(bb_number, total_bb_forces)
 
         #area is how much area each taxels or space around the taxel takes
-        area = 0.1
+        #area = 0.1
         #bb_integral_pressure = get_bb_integral_pressure(bb_number, total_bb_forces, area)
         #wrt. the bb centroid
-        #bb_integral_moment, total_bb_moment = get_bb_moment(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position)
+        bb_integral_moment, total_bb_moment = get_bb_moment(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position)
         #wrt. the center
-        bb_integral_moment, total_bb_moment= get_bb_moment_from_center(bb_number, total_bb_forces, total_taxels_3D_position)
+        #bb_integral_moment, total_bb_moment= get_bb_moment_from_center(bb_number, total_bb_forces, total_taxels_3D_position)
         #bb_integral_moment_pressure, total_bb_moment_pressure = get_bb_moment_pressures(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position, area)
 
 
@@ -138,7 +138,8 @@ if __name__ == '__main__':
         waitKey(1)
 
 
-        imshow('Tactile Image Original',I_backtorgb)
-        waitKey(1)
-
-        sleep(0.001)    
+        #imshow('Tactile Image Original',I_backtorgb)
+        #waitKey(1)
+        #ACQUISITION TIME 0.75s
+        elapsed_time = time()-t0
+        sleep(0.75-elapsed_time)

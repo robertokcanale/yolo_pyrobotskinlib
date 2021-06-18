@@ -1,5 +1,6 @@
 import pyrobotskinlib as rsl 
 import numpy as np
+from time import time
 #import tensorflow as tf
 from cv2 import cvtColor, resize, imshow, waitKey, INTER_AREA, COLOR_GRAY2RGB
 from  time import sleep 
@@ -21,7 +22,8 @@ if __name__ == '__main__':
     #LOAD TACTILE IMAGE & SKIN PROPERTIES
     S = rsl.RobotSkin("../calibration_files/collaborate_handle_1_ale.json")
     u = rsl.SkinUpdaterFromShMem(S)
-    T = rsl.TactileMap(S,0)# from here i do 0,1,2,3 i can create differenti images from different patches
+    #u = rsl.SkinUpdaterFromFile(S,"../recorded_data/hand_record.txt")
+    T = rsl.TactileMap(S,0) # from here i do 0,1,2,3 i can create differenti images from different patches
     TIB = rsl.TactileImageBuilder(T)
     TIB.build_tactile_image()
     u.start_robot_skin_updater()
@@ -32,7 +34,6 @@ if __name__ == '__main__':
     number_of_faces = len(skin_faces)
     taxel_ids = S.get_taxel_ids()
     number_of_ids = len(taxel_ids)
-    taxel_coords = np.zeros((number_of_ids,3))
     taxel_coords = [T.taxels[i].get_taxel_position() for i in range(number_of_ids)]
     #LOAD HANDSNET
     #HandsNet = tf.keras.models.load_model('../data/HandsNet_Finetuned.h5')
@@ -42,6 +43,7 @@ if __name__ == '__main__':
 
     while 1:
         #ACQUIRE DATA
+        t0=time()
         u.make_this_thread_wait_for_new_data()
         #IMAGE PROCESSING AND PREDICTION
         I = np.array(TIB.get_tactile_image(),np.uint8) #get the image 
@@ -62,9 +64,12 @@ if __name__ == '__main__':
         #r_axis = get_distance_from_axis(total_taxel_positions, total_taxel_response)
         total_vector_force, integral_force = find_vector_forces(total_taxel_response, total_taxel_normal)
         total_vector_moment, integral_moment = find_vector_moments(total_vector_force, centroid3d, total_taxel_3d_position)
-        #total_vector_moment, integral_moment =   find_vector_moments_from_center(total_vector_force, total_taxel_3d_position)
+        #total_vector_moment, integral_moment =  find_vector_moments_from_center(total_vector_force, total_taxel_3d_position)
         #print("Total Force", total_vector_force)
         #print("Total Moment", total_vector_moment)
 
         write_forces_and_moments(integral_force, integral_moment, force_file, moment_file)
-        sleep(0.001)
+
+        elapsed_time = time()-t0
+        #ACQUISITION TIME 0.5s
+        sleep(0.5-elapsed_time)

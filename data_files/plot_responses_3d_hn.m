@@ -9,8 +9,7 @@ subplot(2,3,1)
 plot(x,force.Var2, 'r','LineWidth',1);
 hold on
 axis on
-
-xlabel('Instant','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
+xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 title('Force X','FontSize',20,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
@@ -23,7 +22,7 @@ hold on
 hold on
 axis on
 
-xlabel('Instant','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
+xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 title('Force Y','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
@@ -35,7 +34,7 @@ hold on
 hold on
 axis on
 
-xlabel('Instant','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
+xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 title('Force Z','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
@@ -45,7 +44,7 @@ plot(x,moment.Var2,'r','LineWidth',1);
 hold on
 axis on
 
-xlabel('Instant','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
+xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 title('Moment X','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
@@ -58,7 +57,7 @@ hold on
 hold on
 axis on
 
-xlabel('Instant','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
+xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 title('Moment Y','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
@@ -70,7 +69,7 @@ hold on
 hold on
 axis on
 
-xlabel('Instant','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
+xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 title('Moment Z','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
