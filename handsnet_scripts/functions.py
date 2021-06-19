@@ -86,7 +86,13 @@ def find_vector_forces(total_taxel_response, total_taxel_normal):
             integral_force[0] = integral_force[0] + vector_force[0]
             integral_force[1] = integral_force[1] + vector_force[1]
             integral_force[2] = integral_force[2] + vector_force[2]
-        total_vector_force.append(vector_force)
+            total_vector_force.append(vector_force)
+        #HERE STUFF MIGHT BE DIFFERENT AND WE MIGHT CONSIDER SOME AREA
+        #STILL TO MODIFY/EVALUATE, for now it is simply divided by the total number of forces
+        #TO BE MODIFIED
+        integral_force[0] = integral_force[0] / len(total_vector_force) #total moments divided by their number to get the average
+        integral_force[1] = integral_force[1] / len(total_vector_force)
+        integral_force[2] = integral_force[2] / len(total_vector_force)
 
     return total_vector_force, integral_force
 
@@ -122,7 +128,6 @@ def find_vector_moments_from_center(total_vector_force, total_taxel_3d_position)
         integral_moment[1] = integral_moment[1] / len(total_vector_force)
         integral_moment[2] = integral_moment[2] / len(total_vector_force)
     return total_vector_moment, integral_moment
-    
 
 #BACK PROJECT A POINT FROM 2D MAP TO 3D
 def back_project_centroid(S, T, bb_centroid2d, taxel_coords):
