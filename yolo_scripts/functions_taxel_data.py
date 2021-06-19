@@ -24,6 +24,7 @@ def bb_active_taxel (bb_number, T, bb_predictions_reshaped, TIB, skin_faces):
                 faces_predictions.append(skin_faces[face_index][1])
                 faces_predictions.append(skin_faces[face_index][2])
 
+            #taxel predictions is the taxel IDs
             taxel_predictions[n] = set(faces_predictions) #set rmoves duplicates
             pixel_positions[n] = pixel_position
         #Prediction info
