@@ -4,7 +4,7 @@ from time import time
 #import tensorflow as tf
 from cv2 import cvtColor, resize, imshow, waitKey, INTER_AREA, COLOR_GRAY2RGB
 from  time import sleep 
-from functions import *
+from functions_optimized import *
             
 #MAIN
 if __name__ == '__main__':
@@ -29,33 +29,30 @@ if __name__ == '__main__':
 
     while 1:
         #ACQUIRE DATA
-        t0=time()
         u.make_this_thread_wait_for_new_data()
         #IMAGE PROCESSING AND PREDICTION
-        I = np.array(TIB.get_tactile_image(),np.uint8) #get the image 
+        """I = np.array(TIB.get_tactile_image(),np.uint8) #get the image 
         I = I.reshape([rows,cols]) #reshape it into a 2d array
-        #I_toshow, hand_contact = image_prediction(I, HandsNet)
-        #contact(hand_contact)
         im_to_show = resize(I, (500, 500), interpolation = INTER_AREA)
         imshow('Tactile Image',im_to_show)
-        waitKey(1)
+        waitKey(1) """
 
         #Get Total Taxels Responses and Positions
-        total_taxel_response, total_taxel_3d_position, total_taxel_normal, total_taxel_2d_position= get_taxel_data(S,T, number_of_ids)
-        centroid2d, centroid3d = get_centroid(S,T, total_taxel_2d_position, taxel_coords)
+        total_taxel_response, total_taxel_3d_position, total_taxel_normal, total_taxel_2d_position, active_taxels_length= get_taxel_data(S,T, number_of_ids)
 
-        #Active taxels distance from [0,0,0]
-        #r = get_distance_from_center(total_taxel_positions,total_taxel_response) 
-        #Active taxels distance from [x,0,0], the cylinder axis
-        #r_axis = get_distance_from_axis(total_taxel_positions, total_taxel_response)
-        total_vector_force, integral_force = find_vector_forces(total_taxel_response, total_taxel_normal)
-        total_vector_moment, integral_moment = find_vector_moments(total_vector_force, centroid3d, total_taxel_3d_position)
-        #total_vector_moment, integral_moment =  find_vector_moments_from_center(total_vector_force, total_taxel_3d_position)
+
+        centroid2d, centroid3d = get_centroid(S,T, total_taxel_2d_position, taxel_coords)
+ 
+        total_vector_force, integral_force = find_vector_forces(total_taxel_response, total_taxel_normal,active_taxels_length)
+
+        total_vector_moment, integral_moment = find_vector_moments(total_vector_force, centroid3d, total_taxel_3d_position, active_taxels_length)
+
+
         #print("Total Force", total_vector_force)
         #print("Total Moment", total_vector_moment)
 
         write_forces_and_moments(integral_force, integral_moment, force_file, moment_file)
 
-        elapsed_time = time()-t0
+
         #ACQUISITION TIME 0.5s
-        sleep(0.5-elapsed_time)
+        #sleep(0.5-elapsed_time)
