@@ -28,23 +28,14 @@ def get_taxel_data(S, T, number_of_ids):
     active_taxels_length = len(S.get_list_of_activated_taxels())   
     active_taxels_list = S.get_list_of_activated_taxels()
 
-    taxels = [S.get_taxel_by_idu(val) for i, val in enumerate(active_taxels_list)]
+    taxels3D = [S.get_taxel_by_idu(val) for i, val in enumerate(active_taxels_list)]
     taxels2D = [T.get_taxel_by_idu(val) for i, val in enumerate(active_taxels_list)]
-    total_taxel_response = [taxels[i].get_taxel_response() for i in range(active_taxels_length)]     #empty array for the responses 
-    total_taxel_3d_position = [taxels[i].get_taxel_position() for i in range(active_taxels_length)]
-    total_taxel_normal = [taxels[i].get_taxel_normal() for i in range(active_taxels_length)]
-    total_taxels_2d_position = [taxels2D[i].get_taxel_normal() for i in range(active_taxels_length)]
-    """ print(taxels2D[0].get_taxel_position())
-    total_taxels_2d_position = dict()
-
-    for i in range(number_of_ids):
-        if S.taxels[i].get_taxel_response() > 500:  #to filter out some noise
-            #total_taxel_response.append(S.taxels[i].get_taxel_response()) 
-            #total_taxel_3d_position.append(S.taxels[i].get_taxel_position())
-            #total_taxel_normal.append(S.taxels[i].get_taxel_normal())
-            a = T.taxels[i].get_taxel_position()
-            total_taxels_2d_position[i]= 0 #on the tactile map
-    """
+    total_taxel_response = [taxels3D[i].get_taxel_response() for i in range(active_taxels_length) if taxels3D[i].get_taxel_response()>700]     #empty array for the responses 
+    total_taxel_3d_position = [taxels3D[i].get_taxel_position() for i in range(active_taxels_length) if taxels3D[i].get_taxel_response()>700]
+    total_taxel_normal = [taxels3D[i].get_taxel_normal() for i in range(active_taxels_length) if taxels3D[i].get_taxel_response()>700]
+    total_taxels_2d_position = [taxels2D[i].get_taxel_normal() for i in range(active_taxels_length) if taxels3D[i].get_taxel_response()>700]
+    active_taxels_length= len(total_taxel_response)
+    print(np.size(total_taxel_response),np.size(total_taxel_3d_position),np.size(total_taxel_normal),np.size(total_taxels_2d_position),)
     return total_taxel_response, total_taxel_3d_position, total_taxel_normal, total_taxels_2d_position, active_taxels_length
 
 #Taxel Distance From Center
@@ -64,7 +55,7 @@ def get_distance_from_axis(total_taxel_position, total_taxel_response):
     return r_axis
 
 #2D AND 3D CENTROID OF BB
-def get_centroid(S,T, total_taxels_2d_position, taxel_coords):
+def get_centroid(S,T, total_taxels_2d_position, taxel_coords, active_taxels_length):
     centroid2d = [0.0,0.0,0.0]
     centroid3d = [0.0,0.0,0.0]
     if len(total_taxels_2d_position) != 0:
@@ -72,9 +63,9 @@ def get_centroid(S,T, total_taxels_2d_position, taxel_coords):
             centroid2d[0] = centroid2d[0] + position[0]
             centroid2d[1] = centroid2d[1] + position[1]
             centroid2d[2] = centroid2d[2] + position[2] #z should be 0 anyway
-        centroid2d[0] = centroid2d[0] / len(total_taxels_2d_position)
-        centroid2d[1] = centroid2d[1] / len(total_taxels_2d_position)
-        centroid2d[2] = centroid2d[2] / len(total_taxels_2d_position)
+        centroid2d[0] = centroid2d[0] / active_taxels_length
+        centroid2d[1] = centroid2d[1] / active_taxels_length
+        centroid2d[2] = centroid2d[2] / active_taxels_length
         #used for projecting a 2D centroid on the tactile map to a 3D point
         centroid3d = back_project_centroid(S, T, centroid2d, taxel_coords) 
     else:

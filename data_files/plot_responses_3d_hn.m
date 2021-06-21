@@ -28,7 +28,7 @@ axis on
 xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 title('Force Y','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-ylim([y_force_min y_force_max]) 
+ylim([(y_force_min-500) (y_force_max+500)]) 
 % Tile 3
 subplot(2,3,3)
 
@@ -40,7 +40,7 @@ axis on
 xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 title('Force Z','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-ylim([y_force_min y_force_max]) 
+ylim([(y_force_min-500) (y_force_max+500)]) 
 % Tile 4
 subplot(2,3,4)
 plot(x,moment.Var2,'r','LineWidth',1);
@@ -50,7 +50,7 @@ axis on
 xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 title('Moment X','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-ylim([y_moment_min y_moment_max]) 
+ylim([(y_moment_min-50) (y_moment_max+50)])
 % Tile 5
 subplot(2,3,5)
 
@@ -63,7 +63,7 @@ axis on
 xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 title('Moment Y','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-ylim([y_moment_min y_moment_max]) 
+ylim([(y_moment_min-50) (y_moment_max+50)])
 % Tile 6
 subplot(2,3,6)
 
@@ -75,8 +75,8 @@ axis on
 xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 title('Moment Z','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-ylim([y_moment_min y_moment_max]) 
-sgtitle('Two Fingers Y Rotation Force and Moment Integral','FontSize',25,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
+ylim([(y_moment_min-50) (y_moment_max+50)])
+sgtitle('Left Upgrip Force and Moment Integral','FontSize',25,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
 
 
