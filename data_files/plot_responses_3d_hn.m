@@ -12,10 +12,10 @@ subplot(2,3,1)
 plot(x,force.Var2, 'r','LineWidth',1);
 hold on
 axis on
-xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
-ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
-title('Force X','FontSize',20,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-ylim([(y_force_min-500) (y_force_max+500)]) 
+xlabel('Samples','FontSize',10,'FontName', 'CMU Serif','Interpreter', 'latex') 
+ylabel('Intensity','FontSize',10,'FontName', 'CMU Serif','Interpreter', 'latex') 
+title('Force X','FontSize',12,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
+ylim([(y_force_min-500) (y_force_max+500)]);
 % Tile 2
 subplot(2,3,2)
 
@@ -25,10 +25,10 @@ hold on
 hold on
 axis on
 
-xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
-ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
-title('Force Y','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-ylim([(y_force_min-500) (y_force_max+500)]) 
+xlabel('Samples','FontSize',10,'FontName', 'CMU Serif','Interpreter', 'latex') 
+ylabel('Intensity','FontSize',10,'FontName', 'CMU Serif','Interpreter', 'latex') 
+title('Force Y','FontSize',12,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
+ylim([(y_force_min-500) (y_force_max+500)]);
 % Tile 3
 subplot(2,3,3)
 
@@ -37,46 +37,50 @@ hold on
 hold on
 axis on
 
-xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
-ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
-title('Force Z','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-ylim([(y_force_min-500) (y_force_max+500)]) 
+xlabel('Samples','FontSize',10,'FontName', 'CMU Serif','Interpreter', 'latex') 
+ylabel('Intensity','FontSize',10,'FontName', 'CMU Serif','Interpreter', 'latex') 
+title('Force Z','FontSize',12,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
+ylim([(y_force_min-500) (y_force_max+500)]);
 % Tile 4
 subplot(2,3,4)
 plot(x,moment.Var2,'r','LineWidth',1);
 hold on
 axis on
 
-xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
-ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
-title('Moment X','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-ylim([(y_moment_min-50) (y_moment_max+50)])
+xlabel('Samples','FontSize',10,'FontName', 'CMU Serif','Interpreter', 'latex') 
+ylabel('Intensity','FontSize',10,'FontName', 'CMU Serif','Interpreter', 'latex') 
+title('Moment X','FontSize',12,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
+ylim([(y_moment_min-50) (y_moment_max+50)]);
 % Tile 5
 subplot(2,3,5)
 
 plot(x,moment.Var3,'g', 'LineWidth',1);
 hold on
-
-hold on
 axis on
 
-xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
-ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
-title('Moment Y','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-ylim([(y_moment_min-50) (y_moment_max+50)])
+xlabel('Samples','FontSize',10,'FontName', 'CMU Serif','Interpreter', 'latex') 
+ylabel('Intensity','FontSize',10,'FontName', 'CMU Serif','Interpreter', 'latex') 
+title('Moment Y','FontSize',12,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
+ylim([(y_moment_min-50) (y_moment_max+50)]);
 % Tile 6
 subplot(2,3,6)
 
 plot(x,moment.Var4,'b','LineWidth',1);
 hold on
-hold on
 axis on
 
-xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
-ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
-title('Moment Z','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-ylim([(y_moment_min-50) (y_moment_max+50)])
-sgtitle('Left Upgrip Force and Moment Integral','FontSize',25,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
+xlabel('Samples','FontSize',10,'FontName', 'CMU Serif','Interpreter', 'latex') 
+ylabel('Intensity','FontSize',10,'FontName', 'CMU Serif','Interpreter', 'latex') 
+title('Moment Z','FontSize',12,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
+ylim([(y_moment_min-50) (y_moment_max+50)]);
+sgtitle('Left Side Pushdown Force and Moment Integral','FontSize',14,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
 
-
+x0=0;
+y0=0;
+width=500;
+height=300;
+set(gcf,'units','points','position',[x0,y0,width,height])
+imagewd = gcf; 
+set(gca,'LooseInset',get(gca,'TightInset'));
+exportgraphics(imagewd,'total.png','Resolution',200)
 

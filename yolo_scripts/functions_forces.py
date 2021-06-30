@@ -1,8 +1,8 @@
 import numpy as np
 from math import sqrt, pow
 #General case vector forces, just considering the response equal to the force, A=1
-def find_vector_forces(total_taxel_responses, bb_normal):  
-    total_vector_forces = [(-np.multiply(taxel_response,bb_normal[i])) for i,taxel_response in enumerate(total_taxel_responses) if len(total_taxel_responses) != 0]
+def find_vector_forces(total_taxel_responses, bb_normal_taxel):  
+    total_vector_forces = [(-np.multiply(taxel_response,bb_normal_taxel[i])) for i,taxel_response in enumerate(total_taxel_responses) if len(total_taxel_responses) != 0]
     return total_vector_forces
 
 #Case for each BB, total taxel normals is not negated, so to find internal forces i need to put a - in find vector forces

@@ -104,32 +104,29 @@ if __name__ == '__main__':
         bb_predictions_reshaped, I_backtorgb = bounding_box_predictions_reshaped(bb_predictions, bb_number, I_backtorgb, colors, rows, cols)
 
         #ACTIVATED TAXELS FOR EACH BB
-        taxel_predictions, pixel_positions, taxel_predictions_info = bb_active_taxel(bb_number, T, bb_predictions_reshaped, TIB, skin_faces)
+
+        #taxel_predictions, pixel_positions, taxel_predictions_info = bb_active_taxel(bb_number, T, bb_predictions_reshaped, TIB, skin_faces)
+        taxel_predictions, taxel_predictions_info =bb_active_taxel_optimized(bb_number, T, bb_predictions_reshaped, TIB, skin_faces)
 
         #GET RESPONSE OF ACTIVATED TAXELS
         total_taxel_responses, total_taxels_3D_position, total_taxel_normals, total_taxels_2D_position = get_total_data(bb_number, S, T, taxel_predictions)
 
         #average_responses =get_average_response_per_BB(bb_number, total_taxel_responses, taxel_predictions_info)
-        bb_normal = get_bb_average_normals(bb_number,total_taxel_normals)
+        #bb_normal = get_bb_average_normals(bb_number,total_taxel_normals)
 
-        bb_centroid2d, bb_centroid3d = get_bb_centroids(bb_number,S,T, total_taxels_2D_position, taxel_coords)
+        #bb_centroid2d, bb_centroid3d = get_bb_centroids(bb_number,S,T, total_taxels_2D_position, taxel_coords)
 
         total_bb_forces = find_total_bb_forces(bb_number, total_taxel_responses, total_taxel_normals)
         #I  can either get the area or the forcs
         bb_integral_force = get_bb_integral_force(bb_number, total_bb_forces)
 
-        #area is how much area each taxels or space around the taxel takes
-        #area = 0.1
-        #bb_integral_pressure = get_bb_integral_pressure(bb_number, total_bb_forces, area)
         #wrt. the bb centroid
-        bb_integral_moment, total_bb_moment = get_bb_moment(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position)
+        #bb_integral_moment, total_bb_moment = get_bb_moment(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position)
         #wrt. the center
-        #bb_integral_moment, total_bb_moment= get_bb_moment_from_center(bb_number, total_bb_forces, total_taxels_3D_position)
-        #bb_integral_moment_pressure, total_bb_moment_pressure = get_bb_moment_pressures(bb_number, total_bb_forces, bb_centroid3d, total_taxels_3D_position, area)
 
-
-        
+        bb_integral_moment, total_bb_moment= get_bb_moment_from_center(bb_number, total_bb_forces, total_taxels_3D_position) 
         #write_responses(bb_number, taxel_predictions_info, average_responses, palm_file,thumb_file,index_file, middle_file, ring_file, pinkie_file)
+
         write_forces(bb_number, taxel_predictions_info, bb_integral_force, palm_file_f,thumb_file_f,index_file_f, middle_file_f, ring_file_f, pinkie_file_f)
         write_moments(bb_number, taxel_predictions_info, bb_integral_moment, palm_file_m,thumb_file_m,index_file_m, middle_file_m, ring_file_m, pinkie_file_m)
 
@@ -142,4 +139,6 @@ if __name__ == '__main__':
         #waitKey(1)
         #ACQUISITION TIME 0.75s
         elapsed_time = time()-t0
-        sleep(0.75-elapsed_time)
+        #print("Elapsed", elapsed_time)
+
+        sleep(0.4-elapsed_time)

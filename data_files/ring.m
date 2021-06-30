@@ -83,6 +83,3 @@ title('Moment Z','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'In
 ylim([(y_moment_min-50) (y_moment_max+50)])
 
 sgtitle('Total Ring Force and Moment Integral','FontSize',25,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-
-
-

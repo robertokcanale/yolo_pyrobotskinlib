@@ -1,5 +1,5 @@
-force = readtable(strcat('palm_integral_forces.txt'));
-moment = readtable(strcat('palm_integral_moments.txt'));
+force = readtable(strcat('index_integral_forces.txt'));
+moment = readtable(strcat('index_integral_moments.txt'));
 
 set(0,'DefaultTextFontname', 'CMU Serif')
 x = 1:length(force.Var1);
@@ -83,6 +83,3 @@ title('Moment Z','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'In
 ylim([(y_moment_min-50) (y_moment_max+50)])
 
 sgtitle('Total Plam Force and Moment Integral','FontSize',25,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-
-
-

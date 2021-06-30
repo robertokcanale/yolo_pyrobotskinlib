@@ -23,19 +23,22 @@ def image_prediction(I, HandsNet):
     return I_toshow, hand_contact
 
 #Total Taxel Predictions
-def get_taxel_data(S, T, number_of_ids):
+def get_taxel_data(S, T):
     #get active taxels
-    active_taxels_length = len(S.get_list_of_activated_taxels())   
     active_taxels_list = S.get_list_of_activated_taxels()
 
-    taxels3D = [S.get_taxel_by_idu(val) for i, val in enumerate(active_taxels_list)]
-    taxels2D = [T.get_taxel_by_idu(val) for i, val in enumerate(active_taxels_list)]
-    total_taxel_response = [taxels3D[i].get_taxel_response() for i in range(active_taxels_length) if taxels3D[i].get_taxel_response()>700]     #empty array for the responses 
-    total_taxel_3d_position = [taxels3D[i].get_taxel_position() for i in range(active_taxels_length) if taxels3D[i].get_taxel_response()>700]
-    total_taxel_normal = [taxels3D[i].get_taxel_normal() for i in range(active_taxels_length) if taxels3D[i].get_taxel_response()>700]
-    total_taxels_2d_position = [taxels2D[i].get_taxel_normal() for i in range(active_taxels_length) if taxels3D[i].get_taxel_response()>700]
+    #Get list of taxels on 3D mesh and on 2D mesh
+    taxels3D = [S.get_taxel_by_idu(val) for i, val in enumerate(active_taxels_list) if S.get_taxel_by_idu(val).get_taxel_response()>1000]
+    taxels2D = [T.get_taxel_by_idu(val) for i, val in enumerate(active_taxels_list) if S.get_taxel_by_idu(val).get_taxel_response()>1000 ]
+    
+    #Get response, 3D normal, 2D and 3D position
+    total_taxel_response = [taxels3D[i].get_taxel_response() for i in range(np.size(taxels3D))]     #empty array for the responses 
+    total_taxel_3d_position = [taxels3D[i].get_taxel_position() for i in range(np.size(taxels3D)) ]
+    total_taxel_normal = [taxels3D[i].get_taxel_normal() for i in range(np.size(taxels3D)) ]
+    total_taxels_2d_position = [taxels2D[i].get_taxel_normal() for i in range(np.size(taxels2D)) ]
+    
     active_taxels_length= len(total_taxel_response)
-    print(np.size(total_taxel_response),np.size(total_taxel_3d_position),np.size(total_taxel_normal),np.size(total_taxels_2d_position),)
+    
     return total_taxel_response, total_taxel_3d_position, total_taxel_normal, total_taxels_2d_position, active_taxels_length
 
 #Taxel Distance From Center
@@ -98,37 +101,40 @@ def find_vector_forces(total_taxel_response, total_taxel_normal, active_taxels_l
     return total_vector_force, integral_force
 
 #General case vector moments
-def find_vector_moments(total_vector_force, centroid3d, total_taxel_3d_position,active_taxels_length):
+def find_vector_moments(total_vector_force, centroid3d, total_taxel_3d_position, active_taxels_length):
     total_vector_moment = []
     integral_moment = [0.0,0.0,0.0]
     moment = [0.0,0.0,0.0]
-    if len(total_vector_force) != 0:
+    if active_taxels_length != 0:
         for i, vec_force in enumerate(total_vector_force):
             distance = np.subtract(total_taxel_3d_position[i], centroid3d) #between centroid and taxel position
             moment = np.cross(distance, vec_force) #vector produce between distance and vector force on the taxel
             integral_moment = np.add(integral_moment, moment) # summing it up all the moments
             total_vector_moment.append(moment) #append the single moment in a whole vector
         #TO BE MODIFIED
+
         integral_moment[0] = integral_moment[0] / active_taxels_length #total moments divided by their number to get the average
         integral_moment[1] = integral_moment[1] / active_taxels_length
         integral_moment[2] = integral_moment[2] / active_taxels_length
     return total_vector_moment, integral_moment
 
-def find_vector_moments_from_center(total_vector_force, total_taxel_3d_position):
-    total_vector_moment = []
+def find_vector_moments_from_center(total_vector_force, total_taxel_3d_position, active_taxels_length):
+    #total_vector_moment = []
     integral_moment = [0.0,0.0,0.0]
     moment = [0.0,0.0,0.0]
-    if len(total_vector_force) != 0:
+    if active_taxels_length != 0:
         for i, vec_force in enumerate(total_vector_force):
-            distance = np.subtract(total_taxel_3d_position[i], [0,0,0]) #between centroid and taxel position
+
+            distance = np.subtract(total_taxel_3d_position[i],[0.0,0.0,0.0]) #between centroid and taxel position
             moment = np.cross(distance, vec_force) #vector produce between distance and vector force on the taxel
             integral_moment = np.add(integral_moment, moment) # summing it up all the moments
-            total_vector_moment.append(moment) #append the single moment in a whole vector
+            #total_vector_moment.append(moment) #append the single moment in a whole vector
         #TO BE MODIFIED
-        integral_moment[0] = integral_moment[0] / len(total_vector_force) #total moments divided by their number to get the average
-        integral_moment[1] = integral_moment[1] / len(total_vector_force)
-        integral_moment[2] = integral_moment[2] / len(total_vector_force)
-    return total_vector_moment, integral_moment
+        integral_moment[0] = integral_moment[0] / active_taxels_length #total moments divided by their number to get the average
+        integral_moment[1] = integral_moment[1] / active_taxels_length
+        integral_moment[2] = integral_moment[2] / active_taxels_length
+
+    return integral_moment
 
 #BACK PROJECT A POINT FROM 2D MAP TO 3D
 def back_project_centroid(S, T, bb_centroid2d, taxel_coords):

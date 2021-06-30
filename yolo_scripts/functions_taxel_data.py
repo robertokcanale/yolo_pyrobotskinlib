@@ -1,6 +1,5 @@
 import numpy as np
 
-from numpy.lib.function_base import diff
 #Get list of active taxels per bounding box on the image, create an array of the taxel center
 def bb_active_taxel (bb_number, T, bb_predictions_reshaped, TIB, skin_faces):
     taxel_predictions, pixel_positions,taxel_predictions_info = np.empty((bb_number,), dtype = object), np.empty((bb_number,), dtype = object), np.empty((bb_number,), dtype = object)
@@ -34,16 +33,54 @@ def bb_active_taxel (bb_number, T, bb_predictions_reshaped, TIB, skin_faces):
         taxel_predictions_info[n] = info #this is the name, conf and # active taxels per prediction
     return taxel_predictions, pixel_positions, taxel_predictions_info
 
+def bb_active_taxel_optimized(bb_number, T, bb_predictions_reshaped, TIB, skin_faces):
+    taxel_predictions,taxel_predictions_info = np.empty((bb_number,), dtype = object), np.empty((bb_number,), dtype = object)
+    for n in range(bb_number):
+        faces_predictions,  info = [], []
+        cols = range(bb_predictions_reshaped[n].coordinates_reshaped[0], bb_predictions_reshaped[n].coordinates_reshaped[2])
+        rows = range(bb_predictions_reshaped[n].coordinates_reshaped[1], bb_predictions_reshaped[n].coordinates_reshaped[3])
+
+        for i in cols:
+            for j in rows:
+                face_index = TIB.get_pixel_face_index( i,  j)
+                if face_index == (-1) or face_index >= 1218: #checking that taxels are withing boundss
+                    break
+
+                #Taxel_IDs_from_faces
+                faces_predictions.append(skin_faces[face_index][0])
+                faces_predictions.append(skin_faces[face_index][1])
+                faces_predictions.append(skin_faces[face_index][2])
+
+            #taxel predictions is the taxel IDs
+            taxel_predictions[n] = set(faces_predictions) #set rmoves duplicates
+        #Prediction info
+        info.append(bb_predictions_reshaped[n].label)
+        info.append(bb_predictions_reshaped[n].confidence)
+        info.append(len(set(faces_predictions)))
+        taxel_predictions_info[n] = info #this is the name, conf and # active taxels per prediction
+    return taxel_predictions, taxel_predictions_info
+
 #Get total data for the all the taxels and bounding boxes
 #NORMALS ARE ALREADY NORMALIZED
 def get_total_data(bb_number, S, T, taxel_predictions):
-
-    total_taxel_responses = [[S.taxels[i].get_taxel_response() for i in taxel_predictions[n]] for n in range(bb_number)] 
-    total_taxels_3D_position = [[S.taxels[i].get_taxel_position()for i in taxel_predictions[n]] for n in range(bb_number)] 
-    total_taxel_normals = [[S.taxels[i].get_taxel_normal() for i in taxel_predictions[n]] for n in range(bb_number)] 
-    total_taxels_2D_position = [[T.taxels[i].get_taxel_position() for i in taxel_predictions[n]] for n in range(bb_number)] 
-
-    return total_taxel_responses, total_taxels_3D_position, total_taxel_normals , total_taxels_2D_position
+    if bb_number != 0:
+        total_taxel_responses, total_taxels_3D_position, total_taxel_normals, total_taxels_2D_position = np.empty((bb_number,), dtype = object), np.empty((bb_number), dtype = object), np.empty((bb_number,), dtype = object), np.empty((bb_number,), dtype = object)
+        #for each BB, get the data
+        for n in range(bb_number):
+            resp, norm, threedpos, twodpos = [], [], [], []
+            for i in taxel_predictions[n]:
+                if S.taxels[i].get_taxel_response() > 1000: #filtering out noise
+                    resp.append(S.taxels[i].get_taxel_response())
+                    norm.append(S.taxels[i].get_taxel_normal())
+                    threedpos.append(S.taxels[i].get_taxel_position())
+                    twodpos.append(T.taxels[i].get_taxel_position())                    
+            total_taxel_responses[n] = resp
+            total_taxel_normals[n] = norm
+            total_taxels_3D_position[n] = threedpos
+            total_taxels_2D_position[n] = twodpos  
+        return total_taxel_responses, total_taxels_3D_position, total_taxel_normals , total_taxels_2D_position
+    else:
+        return [0], [[0,0,0]], [[0,0,0]], [[0,0,0]]
 
 #AVERAGE RESPONSES including taxels with 0 response
 def get_average_response_per_BB(bb_number, total_taxel_responses, taxel_predictions_info):

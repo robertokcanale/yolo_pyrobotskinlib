@@ -15,7 +15,7 @@ axis on
 xlabel('Samples','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 ylabel('Intensity','FontSize',12,'FontName', 'CMU Serif','Interpreter', 'latex') 
 title('Force X','FontSize',20,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-ylim([(y_force_min-500) (y_force_max+500)]) 
+ylim([(y_force_min-500) (y_force_max+500)])
 
 % Tile 2
 subplot(2,3,2)
@@ -83,6 +83,3 @@ title('Moment Z','FontSize',18,'FontWeight','bold', 'FontName', 'CMU Serif', 'In
 ylim([(y_moment_min-50) (y_moment_max+50)])
 
 sgtitle('Total Pinkie Force and Moment Integral','FontSize',25,'FontWeight','bold', 'FontName', 'CMU Serif', 'Interpreter', 'latex');
-
-
-

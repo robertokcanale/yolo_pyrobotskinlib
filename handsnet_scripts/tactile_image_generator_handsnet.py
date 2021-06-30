@@ -7,7 +7,7 @@ import torch
 import tensorflow as tf
 import cv2
 from PIL import Image
-from functions import *
+from functions_optimized import *
 import time
 
 #MAIN

@@ -1,9 +1,6 @@
 import pyrobotskinlib as rsl 
 import numpy as np
-from time import time
-#import tensorflow as tf
-from cv2 import cvtColor, resize, imshow, waitKey, INTER_AREA, COLOR_GRAY2RGB
-from  time import sleep 
+from time import time, sleep
 from functions_optimized import *
             
 #MAIN
@@ -28,20 +25,25 @@ if __name__ == '__main__':
     force_file, moment_file = open_files()
 
     while 1:
-        #t0= time()
+        t0= time()
         #ACQUIRE DATA
         u.make_this_thread_wait_for_new_data()
 
         #Get Total Taxels Responses and Positions
-        total_taxel_response, total_taxel_3d_position, total_taxel_normal, total_taxel_2d_position, active_taxels_length= get_taxel_data(S,T, number_of_ids)
+        total_taxel_response, total_taxel_3d_position, total_taxel_normal, total_taxel_2d_position, active_taxels_length= get_taxel_data(S,T)
         #Get Centroid
-        centroid2d, centroid3d = get_centroid(S,T, total_taxel_2d_position, taxel_coords, active_taxels_length)
+        #centroid2d, centroid3d = get_centroid(S,T, total_taxel_2d_position, taxel_coords, active_taxels_length)
+        #print(centroid3d, [0,0,0])
         #get Forces  and integral
         total_vector_force, integral_force = find_vector_forces(total_taxel_response, total_taxel_normal,active_taxels_length)
         #Get Moments and integral
-        total_vector_moment, integral_moment = find_vector_moments(total_vector_force, centroid3d, total_taxel_3d_position, active_taxels_length)
+        #centroid2d, centroid3d = get_centroid(S,T, total_taxel_2d_position, taxel_coords, active_taxels_length)
+        #total_vector_moment, integral_moment = find_vector_moments(total_vector_force, centroid3d, total_taxel_3d_position, active_taxels_length)
+        integral_moment = find_vector_moments_from_center(total_vector_force, total_taxel_3d_position, active_taxels_length)
+
         #write on file
         write_forces_and_moments(integral_force, integral_moment, force_file, moment_file)
+        print("Elapsed", time()-t0)
         #samples acquired every= 0.01s
-        #print("Elapsed: ",time()- t0)
+
 
