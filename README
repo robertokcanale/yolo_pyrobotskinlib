@@ -1,0 +1,5 @@
+This package contains data record of the force and moment integral, for the whole hand and for the segmented hand.
+
+in HANDSNET_SCRIPTS, the force and moment integral of the whole hand is computed, as well as the testing of handsnet on four handles. 
+
+in YOLO_SCRIPTS the force and moment for the hand segments (thumb, palm etc) can be found, as well as other visualization tools. 
